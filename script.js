@@ -28,19 +28,17 @@ function movePlayer(x) {
   }
 }
 
-// 🖱️ Mouse + touch unified
 function handleInput(clientX) {
   const rect = canvas.getBoundingClientRect();
-  const x = clientX - rect.left;
+  const scaleX = canvas.width / rect.width;
+  const x = (clientX - rect.left) * scaleX;
   movePlayer(x);
 }
 
-// 🖱️ Mouse
 canvas.addEventListener("click", (e) => {
   handleInput(e.clientX);
 });
 
-// 📱 Touch (fixes page moving too)
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
   handleInput(e.touches[0].clientX);
