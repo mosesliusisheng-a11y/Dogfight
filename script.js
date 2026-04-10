@@ -1,3 +1,5 @@
+document.body.style.margin = "0";
+document.body.style.overflow = "hidden";
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -17,11 +19,31 @@ let enemyBullets = [];
 let enemies = [];
 
 // 🔹 Touch control
-canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault(); // stops page moving
+function movePlayer(x) {
+  player.x = x - player.width / 2;
 
-  const touch = e.touches[0];
-  movePlayer(touch.clientX);
+  if (player.x < 0) player.x = 0;
+  if (player.x > canvas.width - player.width) {
+    player.x = canvas.width - player.width;
+  }
+}
+
+// 🖱️ Mouse + touch unified
+function handleInput(clientX) {
+  const rect = canvas.getBoundingClientRect();
+  const x = clientX - rect.left;
+  movePlayer(x);
+}
+
+// 🖱️ Mouse
+canvas.addEventListener("click", (e) => {
+  handleInput(e.clientX);
+});
+
+// 📱 Touch (fixes page moving too)
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  handleInput(e.touches[0].clientX);
 }, { passive: false });
 
 // 🔫 Auto shoot
