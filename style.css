@@ -1,14 +1,13 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
+html, body {
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  overflow: hidden;
+  background: black;
+  height: 100%;
 }
 
-h1 {
-  color: #333;
-}
-
-p {
-  color: #666;
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
 }
