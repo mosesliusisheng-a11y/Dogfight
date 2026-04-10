@@ -17,17 +17,25 @@ let enemyBullets = [];
 let enemies = [];
 
 // 🔹 Touch control
-canvas.addEventListener("touchmove", (e) => {
-  e.preventDefault();
-
-  const touch = e.touches[0];
-  player.x = touch.clientX - player.width / 2;
+function movePlayer(x) {
+  player.x = x - player.width / 2;
 
   if (player.x < 0) player.x = 0;
   if (player.x > canvas.width - player.width) {
     player.x = canvas.width - player.width;
   }
-}, { passive: false });
+}
+
+// 🖱️ Mouse click (computer)
+canvas.addEventListener("click", (e) => {
+  movePlayer(e.clientX);
+});
+
+// 📱 Touch (phone)
+canvas.addEventListener("touchstart", (e) => {
+  const touch = e.touches[0];
+  movePlayer(touch.clientX);
+});
 
 // 🔫 Auto shoot
 setInterval(() => {
