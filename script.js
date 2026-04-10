@@ -1,5 +1,3 @@
-document.body.style.margin = "0";
-document.body.style.overflow = "hidden";
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -18,7 +16,7 @@ let bullets = [];
 let enemyBullets = [];
 let enemies = [];
 
-// 🔹 Touch control
+// 🔥 PLAYER MOVE FUNCTION
 function movePlayer(x) {
   player.x = x - player.width / 2;
 
@@ -28,6 +26,7 @@ function movePlayer(x) {
   }
 }
 
+// 📍 INPUT HANDLER (fixes tablet + mouse)
 function handleInput(clientX) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -35,16 +34,18 @@ function handleInput(clientX) {
   movePlayer(x);
 }
 
+// 🖱️ CLICK (PC)
 canvas.addEventListener("click", (e) => {
   handleInput(e.clientX);
 });
 
+// 📱 TOUCH (tablet / phone)
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
   handleInput(e.touches[0].clientX);
 }, { passive: false });
 
-// 🔫 Auto shoot
+// 🔫 AUTO SHOOT
 setInterval(() => {
   bullets.push({
     x: player.x + player.width / 2 - 2,
@@ -54,7 +55,7 @@ setInterval(() => {
   });
 }, 300);
 
-// 👾 Spawn enemies
+// 👾 SPAWN ENEMIES
 setInterval(() => {
   enemies.push({
     x: Math.random() * (canvas.width - 40),
@@ -65,16 +66,15 @@ setInterval(() => {
   });
 }, 1000);
 
-// Update
+// 🔄 UPDATE
 function update() {
-
-  // Move bullets
+  // bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
     bullets[i].y -= 8;
     if (bullets[i].y < 0) bullets.splice(i, 1);
   }
 
-  // Move enemies + shooting
+  // enemies
   for (let i = enemies.length - 1; i >= 0; i--) {
     let e = enemies[i];
     e.y += 2;
@@ -93,13 +93,13 @@ function update() {
     if (e.y > canvas.height) enemies.splice(i, 1);
   }
 
-  // Enemy bullets
+  // enemy bullets
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     enemyBullets[i].y += 4;
     if (enemyBullets[i].y > canvas.height) enemyBullets.splice(i, 1);
   }
 
-  // Bullet vs enemy collision
+  // collision
   for (let bi = bullets.length - 1; bi >= 0; bi--) {
     for (let ei = enemies.length - 1; ei >= 0; ei--) {
       let b = bullets[bi];
@@ -119,12 +119,12 @@ function update() {
   }
 }
 
-// Draw
+// 🎨 DRAW
 function draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Player
+  // player
   ctx.fillStyle = "cyan";
   ctx.beginPath();
   ctx.moveTo(player.x + player.width / 2, player.y);
@@ -133,26 +133,26 @@ function draw() {
   ctx.closePath();
   ctx.fill();
 
-  // Bullets
+  // bullets
   ctx.fillStyle = "yellow";
   bullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 
-  // Enemies
+  // enemies
   ctx.fillStyle = "red";
   enemies.forEach(e => {
     ctx.fillRect(e.x, e.y, e.width, e.height);
   });
 
-  // Enemy bullets
+  // enemy bullets
   ctx.fillStyle = "orange";
   enemyBullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 }
 
-// Loop
+// 🔁 GAME LOOP
 function gameLoop() {
   update();
   draw();
