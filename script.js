@@ -27,22 +27,27 @@ function movePlayer(x) {
 }
 
 // 📍 INPUT HANDLER (fixes tablet + mouse)
-function handleInput(clientX) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const x = (clientX - rect.left) * scaleX;
-  movePlayer(x);
+function movePlayer(x) {
+  player.x = x - player.width / 2;
+
+  if (player.x < 0) player.x = 0;
+  if (player.x > canvas.width - player.width) {
+    player.x = canvas.width - player.width;
+  }
 }
 
-// 🖱️ CLICK (PC)
+// 🖱️ mouse
 canvas.addEventListener("click", (e) => {
-  handleInput(e.clientX);
+  const rect = canvas.getBoundingClientRect();
+  movePlayer(e.clientX - rect.left);
 });
 
-// 📱 TOUCH (tablet / phone)
+// 📱 touch
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
-  handleInput(e.touches[0].clientX);
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  movePlayer(touch.clientX - rect.left);
 }, { passive: false });
 
 // 🔫 AUTO SHOOT
