@@ -1,3 +1,5 @@
+let isPaused = false;
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -32,16 +34,35 @@ function movePlayer(x) {
 // 🖱️ mouse click (still works)
 canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
-  movePlayer(e.clientX - rect.left);
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // check pause button first
+  if (isInsidePauseButton(x, y)) {
+    isPaused = !isPaused;
+    return;
+  }
+
+  movePlayer(x);
 });
 
 // 📱 TOUCH DRAG SYSTEM (NEW)
-let isDragging = false;
-
-function getTouchX(e) {
+canvas.addEventListener("touchstart", (e) => {
   const rect = canvas.getBoundingClientRect();
-  return e.touches[0].clientX - rect.left;
-}
+  const touch = e.touches[0];
+
+  const x = touch.clientX - rect.left;
+  const y = touch.clientY - rect.top;
+
+  // check pause button
+  if (isInsidePauseButton(x, y)) {
+    isPaused = !isPaused;
+    return;
+  }
+
+  isDragging = true;
+  movePlayer(x);
+}, { passive: false });
 
 // start
 canvas.addEventListener("touchstart", (e) => {
@@ -176,11 +197,34 @@ function draw() {
 
 // 🔁 GAME LOOP
 function gameLoop() {
-  update();
+  if (!isPaused) {
+    update();
+  }
   draw();
+  drawPauseButton(); // 👈 add this
   requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
-
 canvas.style.touchAction = "none";
+
+function drawPauseButton() {
+  ctx.fillStyle = "white";
+
+  if (isPaused) {
+    // ▶️ Play triangle
+    ctx.beginPath();
+    ctx.moveTo(20, 20);
+    ctx.lineTo(20, 50);
+    ctx.lineTo(45, 35);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // ⏸️ Pause bars
+    ctx.fillRect(20, 20, 8, 30);
+    ctx.fillRect(35, 20, 8, 30);
+  }
+}
+
+function isInsidePauseButton(x, y) {
+  return x >= 20 && x <= 50 && y >= 20 && y <= 50;
+}
