@@ -8,6 +8,7 @@ canvas.height = window.innerHeight;
 
 canvas.style.width = window.innerWidth + "px";
 canvas.style.height = window.innerHeight + "px";
+canvas.style.touchAction = "none";
 
 // Player
 const player = {
@@ -20,6 +21,7 @@ const player = {
 let bullets = [];
 let enemyBullets = [];
 let enemies = [];
+let isDragging = false;
 
 // 🔥 PLAYER MOVE FUNCTION
 function movePlayer(x) {
@@ -31,13 +33,17 @@ function movePlayer(x) {
   }
 }
 
-// 🖱️ mouse click (still works)
+// 📍 Pause button hitbox
+function isInsidePauseButton(x, y) {
+  return x >= 20 && x <= 70 && y >= 20 && y <= 70;
+}
+
+// 🖱️ mouse
 canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  // check pause button first
   if (isInsidePauseButton(x, y)) {
     isPaused = !isPaused;
     return;
@@ -46,7 +52,7 @@ canvas.addEventListener("click", (e) => {
   movePlayer(x);
 });
 
-// 📱 TOUCH DRAG SYSTEM (NEW)
+// 📱 touch start
 canvas.addEventListener("touchstart", (e) => {
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
@@ -54,7 +60,6 @@ canvas.addEventListener("touchstart", (e) => {
   const x = touch.clientX - rect.left;
   const y = touch.clientY - rect.top;
 
-  // check pause button
   if (isInsidePauseButton(x, y)) {
     isPaused = !isPaused;
     return;
@@ -64,26 +69,25 @@ canvas.addEventListener("touchstart", (e) => {
   movePlayer(x);
 }, { passive: false });
 
-// move
+// 📱 touch move
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
 
-  e.preventDefault(); // VERY important
-  movePlayer(getTouchX(e));
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  movePlayer(touch.clientX - rect.left);
 }, { passive: false });
 
-// end
+// 📱 touch end
 canvas.addEventListener("touchend", () => {
-  isDragging = false;
-});
-
-// extra safety (important on some devices)
-canvas.addEventListener("touchcancel", () => {
   isDragging = false;
 });
 
 // 🔫 AUTO SHOOT
 setInterval(() => {
+  if (isPaused) return;
+
   bullets.push({
     x: player.x + player.width / 2 - 2,
     y: player.y,
@@ -94,6 +98,8 @@ setInterval(() => {
 
 // 👾 SPAWN ENEMIES
 setInterval(() => {
+  if (isPaused) return;
+
   enemies.push({
     x: Math.random() * (canvas.width - 40),
     y: -40,
@@ -187,40 +193,36 @@ function draw() {
   enemyBullets.forEach(b => {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
+
+  drawPauseButton(); // 👈 draw UI LAST
 }
 
-// 🔁 GAME LOOP
+// ⏸️ / ▶️ BUTTON
+function drawPauseButton() {
+  ctx.fillStyle = "white";
+
+  if (isPaused) {
+    // play triangle
+    ctx.beginPath();
+    ctx.moveTo(20, 20);
+    ctx.lineTo(20, 70);
+    ctx.lineTo(70, 45);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // pause bars
+    ctx.fillRect(20, 20, 15, 50);
+    ctx.fillRect(45, 20, 15, 50);
+  }
+}
+
+// 🔁 LOOP
 function gameLoop() {
   if (!isPaused) {
     update();
   }
   draw();
-  drawPauseButton(); // 👈 add this
   requestAnimationFrame(gameLoop);
-}
-
-canvas.style.touchAction = "none";
-
-function drawPauseButton() {
-  ctx.fillStyle = "white";
-
-  if (isPaused) {
-    // ▶️ Play triangle
-    ctx.beginPath();
-    ctx.moveTo(20, 20);
-    ctx.lineTo(20, 50);
-    ctx.lineTo(45, 35);
-    ctx.closePath();
-    ctx.fill();
-  } else {
-    // ⏸️ Pause bars
-    ctx.fillRect(20, 20, 20, 60);
-    ctx.fillRect(60, 20, 20, 60);
-  }
-}
-
-function isInsidePauseButton(x, y) {
-  return x >= 20 && x <= 50 && y >= 20 && y <= 50;
 }
 
 gameLoop();
