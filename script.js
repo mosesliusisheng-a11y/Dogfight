@@ -175,3 +175,5 @@ function gameLoop() {
 }
 
 gameLoop();
+
+canvas.style.touchAction = "none";
