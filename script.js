@@ -214,8 +214,8 @@ function drawPauseButton() {
     ctx.fill();
   } else {
     // ⏸️ Pause bars
-    ctx.fillRect(20, 20, 8, 30);
-    ctx.fillRect(35, 20, 8, 30);
+    ctx.fillRect(20, 20, 20, 60);
+    ctx.fillRect(60, 20, 20, 60);
   }
 }
 
