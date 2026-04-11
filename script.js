@@ -54,14 +54,18 @@ canvas.addEventListener("click", (e) => {
 
 // 📱 touch start
 canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
 
   const x = touch.clientX - rect.left;
   const y = touch.clientY - rect.top;
 
+  // toggle pause ONLY once on touch
   if (isInsidePauseButton(x, y)) {
     isPaused = !isPaused;
+    isDragging = false; // stop movement
     return;
   }
 
@@ -201,18 +205,20 @@ function draw() {
 function drawPauseButton() {
   ctx.fillStyle = "white";
 
+  const size = 40; // 👈 unified size
+
   if (isPaused) {
-    // play triangle
+    // ▶️ play (centered)
     ctx.beginPath();
     ctx.moveTo(20, 20);
-    ctx.lineTo(20, 70);
-    ctx.lineTo(70, 45);
+    ctx.lineTo(20, 20 + size);
+    ctx.lineTo(20 + size, 20 + size / 2);
     ctx.closePath();
     ctx.fill();
   } else {
-    // pause bars
-    ctx.fillRect(20, 20, 15, 50);
-    ctx.fillRect(45, 20, 15, 50);
+    // ⏸️ pause (same height as triangle)
+    ctx.fillRect(20, 20, 10, size);
+    ctx.fillRect(35, 20, 10, size);
   }
 }
 
