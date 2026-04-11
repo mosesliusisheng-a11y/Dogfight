@@ -26,25 +26,16 @@ function movePlayer(x) {
   }
 }
 
-// 📍 INPUT HANDLER (fixes tablet + mouse)
-function movePlayer(x) {
-  player.x = x - player.width / 2;
-
-  if (player.x < 0) player.x = 0;
-  if (player.x > canvas.width - player.width) {
-    player.x = canvas.width - player.width;
-  }
-}
-
-// 🖱️ mouse
+// 🖱️ mouse click (still works)
 canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
   movePlayer(e.clientX - rect.left);
 });
 
+// 📱 TOUCH DRAG SYSTEM (NEW)
 let isDragging = false;
 
-// start dragging
+// start
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
   isDragging = true;
@@ -54,7 +45,7 @@ canvas.addEventListener("touchstart", (e) => {
   movePlayer(touch.clientX - rect.left);
 }, { passive: false });
 
-// move while dragging
+// move
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
 
@@ -64,7 +55,7 @@ canvas.addEventListener("touchmove", (e) => {
   movePlayer(touch.clientX - rect.left);
 }, { passive: false });
 
-// stop dragging
+// end
 canvas.addEventListener("touchend", () => {
   isDragging = false;
 });
