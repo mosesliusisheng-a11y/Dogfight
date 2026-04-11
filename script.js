@@ -64,12 +64,6 @@ canvas.addEventListener("touchstart", (e) => {
   movePlayer(x);
 }, { passive: false });
 
-// start
-canvas.addEventListener("touchstart", (e) => {
-  isDragging = true;
-  movePlayer(getTouchX(e));
-}, { passive: false });
-
 // move
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
@@ -228,3 +222,5 @@ function drawPauseButton() {
 function isInsidePauseButton(x, y) {
   return x >= 20 && x <= 50 && y >= 20 && y <= 50;
 }
+
+gameLoop();
