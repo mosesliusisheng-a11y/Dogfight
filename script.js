@@ -35,28 +35,32 @@ canvas.addEventListener("click", (e) => {
 // 📱 TOUCH DRAG SYSTEM (NEW)
 let isDragging = false;
 
+function getTouchX(e) {
+  const rect = canvas.getBoundingClientRect();
+  return e.touches[0].clientX - rect.left;
+}
+
 // start
 canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault();
   isDragging = true;
-
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  movePlayer(touch.clientX - rect.left);
+  movePlayer(getTouchX(e));
 }, { passive: false });
 
 // move
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
 
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  movePlayer(touch.clientX - rect.left);
+  e.preventDefault(); // VERY important
+  movePlayer(getTouchX(e));
 }, { passive: false });
 
 // end
 canvas.addEventListener("touchend", () => {
+  isDragging = false;
+});
+
+// extra safety (important on some devices)
+canvas.addEventListener("touchcancel", () => {
   isDragging = false;
 });
 
