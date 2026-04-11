@@ -42,13 +42,32 @@ canvas.addEventListener("click", (e) => {
   movePlayer(e.clientX - rect.left);
 });
 
-// 📱 touch
+let isDragging = false;
+
+// start dragging
 canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  isDragging = true;
+
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  movePlayer(touch.clientX - rect.left);
+}, { passive: false });
+
+// move while dragging
+canvas.addEventListener("touchmove", (e) => {
+  if (!isDragging) return;
+
   e.preventDefault();
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
   movePlayer(touch.clientX - rect.left);
 }, { passive: false });
+
+// stop dragging
+canvas.addEventListener("touchend", () => {
+  isDragging = false;
+});
 
 // 🔫 AUTO SHOOT
 setInterval(() => {
