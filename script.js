@@ -218,10 +218,10 @@ function drawPauseButton() {
 
 // HUD (score + crosshair)
 function drawHUD() {
-  const x = canvas.width - 100;
+  const x = canvas.width - 120;
   const y = 50;
 
-  // 🎯 crosshair (your original style)
+  // 🎯 AIM SIGN (original style)
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -233,15 +233,11 @@ function drawHUD() {
   ctx.lineTo(x, y + 20);
   ctx.stroke();
 
-  // 🧾 score box (restored rectangular style)
+  // 🔢 SCORE NUMBER (to the right of aim sign like your original)
   ctx.fillStyle = "white";
-  ctx.fillRect(canvas.width - 120, 20, 100, 50);
-
-  // 🔢 score text (original positioning style, fixed visibility)
-  ctx.fillStyle = "black";
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
-  ctx.fillText(score, canvas.width - 95, 52);
+  ctx.fillText(score, x + 30, y + 8);
 }
 
 // LOOP
