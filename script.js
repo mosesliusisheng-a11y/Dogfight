@@ -219,10 +219,10 @@ function drawPauseButton() {
 // HUD (score + crosshair)
 function drawHUD() {
   const margin = 20;
-  const x = canvas.width - margin - 60; // keeps it snug to right edge
+  const x = canvas.width - margin - 40;
   const y = 50;
 
-  // 🎯 AIM SIGN
+  // 🎯 aim sign
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -234,11 +234,11 @@ function drawHUD() {
   ctx.lineTo(x, y + 20);
   ctx.stroke();
 
-  // 🔢 SCORE (FORCED SIZE RESET)
+  // 🔢 score
   ctx.fillStyle = "white";
-  ctx.font = "24px Arial";   // 🔥 forces correct size
+  ctx.font = "24px Arial";
   ctx.textAlign = "left";
-  ctx.textBaseline = "middle"; // 🔥 prevents vertical shifting
+  ctx.textBaseline = "middle";
 
   ctx.fillText(String(score), x + 30, y);
 }
