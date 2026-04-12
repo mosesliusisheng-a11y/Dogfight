@@ -1,5 +1,5 @@
 let isPaused = false;
-let score = 0; // 🎯 score added
+let score = 0;
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -24,7 +24,7 @@ let enemyBullets = [];
 let enemies = [];
 let isDragging = false;
 
-// 🔥 PLAYER MOVE FUNCTION
+// MOVE PLAYER
 function movePlayer(x) {
   player.x = x - player.width / 2;
 
@@ -34,12 +34,12 @@ function movePlayer(x) {
   }
 }
 
-// 📍 Pause button hitbox
+// PAUSE BUTTON HITBOX
 function isInsidePauseButton(x, y) {
   return x >= 20 && x <= 70 && y >= 20 && y <= 70;
 }
 
-// 🖱️ mouse
+// CLICK
 canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -53,7 +53,7 @@ canvas.addEventListener("click", (e) => {
   movePlayer(x);
 });
 
-// 📱 touch start
+// TOUCH START
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
 
@@ -61,9 +61,8 @@ canvas.addEventListener("touchstart", (e) => {
   const touch = e.touches[0];
 
   const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
 
-  if (isInsidePauseButton(x, y)) {
+  if (isInsidePauseButton(x, touch.clientY - rect.top)) {
     isPaused = !isPaused;
     isDragging = false;
     return;
@@ -73,22 +72,23 @@ canvas.addEventListener("touchstart", (e) => {
   movePlayer(x);
 }, { passive: false });
 
-// 📱 touch move
+// TOUCH MOVE
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
 
   e.preventDefault();
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
+
   movePlayer(touch.clientX - rect.left);
 }, { passive: false });
 
-// 📱 touch end
+// TOUCH END
 canvas.addEventListener("touchend", () => {
   isDragging = false;
 });
 
-// 🔫 AUTO SHOOT
+// AUTO SHOOT
 setInterval(() => {
   if (isPaused) return;
 
@@ -100,7 +100,7 @@ setInterval(() => {
   });
 }, 300);
 
-// 👾 SPAWN ENEMIES
+// SPAWN ENEMIES
 setInterval(() => {
   if (isPaused) return;
 
@@ -113,7 +113,7 @@ setInterval(() => {
   });
 }, 1000);
 
-// 🔄 UPDATE
+// UPDATE
 function update() {
   // bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -160,14 +160,14 @@ function update() {
       ) {
         bullets.splice(bi, 1);
         enemies.splice(ei, 1);
-        score++; // 🎯 increase score
+        score++;
         break;
       }
     }
   }
 }
 
-// 🎨 DRAW
+// DRAW
 function draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -183,30 +183,23 @@ function draw() {
 
   // bullets
   ctx.fillStyle = "yellow";
-  bullets.forEach(b => {
-    ctx.fillRect(b.x, b.y, b.width, b.height);
-  });
+  bullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
 
   // enemies
   ctx.fillStyle = "red";
-  enemies.forEach(e => {
-    ctx.fillRect(e.x, e.y, e.width, e.height);
-  });
+  enemies.forEach(e => ctx.fillRect(e.x, e.y, e.width, e.height));
 
   // enemy bullets
   ctx.fillStyle = "orange";
-  enemyBullets.forEach(b => {
-    ctx.fillRect(b.x, b.y, b.width, b.height);
-  });
+  enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
 
   drawPauseButton();
-  drawScore(); // 🎯 draw score on top
+  drawHUD();
 }
 
-// ⏸️ / ▶️ BUTTON
+// PAUSE BUTTON
 function drawPauseButton() {
   ctx.fillStyle = "white";
-
   const size = 40;
 
   if (isPaused) {
@@ -222,8 +215,8 @@ function drawPauseButton() {
   }
 }
 
-// 🎯 SCORE DISPLAY
-function drawScore() {
+// HUD (score + crosshair)
+function drawHUD() {
   const x = canvas.width - 80;
   const y = 50;
 
@@ -239,18 +232,18 @@ function drawScore() {
   ctx.lineTo(x, y + 20);
   ctx.stroke();
 
-  // score background (moved away from crosshair)
-  ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-  ctx.fillRect(x - 20, y - 35, 80, 25);
+  // score background
+  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  ctx.fillRect(x - 20, y - 40, 100, 30);
 
   // score text
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
-  ctx.fillText(score, x + 20, y - 15);
+  ctx.fillText(score, x + 20, y - 20);
 }
 
-// 🔁 LOOP
+// LOOP
 function gameLoop() {
   if (!isPaused) {
     update();
