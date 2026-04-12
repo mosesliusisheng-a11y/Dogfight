@@ -1,4 +1,5 @@
 let isPaused = false;
+let score = 0; // 🎯 add this line
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -160,6 +161,7 @@ function update() {
       ) {
         bullets.splice(bi, 1);
         enemies.splice(ei, 1);
+        score++;
         break;
       }
     }
@@ -199,6 +201,7 @@ function draw() {
   });
 
   drawPauseButton(); // 👈 draw UI LAST
+  drawscore();
 }
 
 // ⏸️ / ▶️ BUTTON
@@ -220,6 +223,29 @@ function drawPauseButton() {
     ctx.fillRect(20, 20, 10, size);
     ctx.fillRect(35, 20, 10, size);
   }
+}
+
+function drawScore() {
+  const x = canvas.width - 80;
+  const y = 40;
+
+  // 🎯 crosshair
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  ctx.arc(x, y, 15, 0, Math.PI * 2);
+  ctx.moveTo(x - 20, y);
+  ctx.lineTo(x + 20, y);
+  ctx.moveTo(x, y - 20);
+  ctx.lineTo(x, y + 20);
+  ctx.stroke();
+
+  // number
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "right";
+  ctx.fillText(score, canvas.width - 20, 50);
 }
 
 // 🔁 LOOP
