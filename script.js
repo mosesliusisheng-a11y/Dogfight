@@ -1,5 +1,5 @@
 let isPaused = false;
-let score = 0; // 🎯 add this line
+let score = 0; // 🎯 score added
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -63,10 +63,9 @@ canvas.addEventListener("touchstart", (e) => {
   const x = touch.clientX - rect.left;
   const y = touch.clientY - rect.top;
 
-  // toggle pause ONLY once on touch
   if (isInsidePauseButton(x, y)) {
     isPaused = !isPaused;
-    isDragging = false; // stop movement
+    isDragging = false;
     return;
   }
 
@@ -161,7 +160,7 @@ function update() {
       ) {
         bullets.splice(bi, 1);
         enemies.splice(ei, 1);
-        score++;
+        score++; // 🎯 increase score
         break;
       }
     }
@@ -200,18 +199,17 @@ function draw() {
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 
-  drawPauseButton(); // 👈 draw UI LAST
-  drawscore();
+  drawPauseButton();
+  drawScore(); // 🎯 draw score on top
 }
 
 // ⏸️ / ▶️ BUTTON
 function drawPauseButton() {
   ctx.fillStyle = "white";
 
-  const size = 40; // 👈 unified size
+  const size = 40;
 
   if (isPaused) {
-    // ▶️ play (centered)
     ctx.beginPath();
     ctx.moveTo(20, 20);
     ctx.lineTo(20, 20 + size);
@@ -219,17 +217,17 @@ function drawPauseButton() {
     ctx.closePath();
     ctx.fill();
   } else {
-    // ⏸️ pause (same height as triangle)
     ctx.fillRect(20, 20, 10, size);
     ctx.fillRect(35, 20, 10, size);
   }
 }
 
+// 🎯 SCORE DISPLAY
 function drawScore() {
   const x = canvas.width - 80;
   const y = 40;
 
-  // 🎯 crosshair
+  // crosshair
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
