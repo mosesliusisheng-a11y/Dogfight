@@ -221,7 +221,7 @@ function drawHUD() {
   const x = canvas.width - 120;
   const y = 50;
 
-  // 🎯 AIM SIGN (original style)
+  // 🎯 AIM SIGN
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -233,11 +233,13 @@ function drawHUD() {
   ctx.lineTo(x, y + 20);
   ctx.stroke();
 
-  // 🔢 SCORE NUMBER (to the right of aim sign like your original)
+  // 🔢 SCORE (FORCED SIZE RESET)
   ctx.fillStyle = "white";
-  ctx.font = "24px Arial";
+  ctx.font = "24px Arial";   // 🔥 forces correct size
   ctx.textAlign = "left";
-  ctx.fillText(score, x + 30, y + 8);
+  ctx.textBaseline = "middle"; // 🔥 prevents vertical shifting
+
+  ctx.fillText(String(score), x + 30, y);
 }
 
 // LOOP
