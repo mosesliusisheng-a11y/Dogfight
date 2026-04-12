@@ -1,3 +1,4 @@
+console.log("🔥 THIS FILE IS RUNNING VERSION 2");
 console.log("NEW CODE LOADED");
 let isPaused = false;
 let score = 0;
