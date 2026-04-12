@@ -218,7 +218,8 @@ function drawPauseButton() {
 
 // HUD (score + crosshair)
 function drawHUD() {
-  const x = canvas.width - 120;
+  const margin = 20;
+  const x = canvas.width - margin - 60; // keeps it snug to right edge
   const y = 50;
 
   // 🎯 AIM SIGN
