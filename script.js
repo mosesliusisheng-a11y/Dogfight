@@ -224,10 +224,10 @@ function drawPauseButton() {
 
 // 🎯 SCORE DISPLAY
 function drawScore() {
-  const x = canvas.width - 80;
-  const y = 40;
+  const x = canvas.width - 100; // move more left
+  const y = 50;
 
-  // crosshair
+  // 🎯 crosshair
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -239,11 +239,11 @@ function drawScore() {
   ctx.lineTo(x, y + 20);
   ctx.stroke();
 
-  // number
+  // 🔢 number (moved slightly left too)
   ctx.fillStyle = "white";
-  ctx.font = "20px Arial";
-  ctx.textAlign = "right";
-  ctx.fillText(score, canvas.width - 20, 50);
+  ctx.font = "24px Arial";
+  ctx.textAlign = "left"; // 👈 important change
+  ctx.fillText(score, x + 30, y + 8);
 }
 
 // 🔁 LOOP
