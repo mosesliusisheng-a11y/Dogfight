@@ -241,7 +241,7 @@ function drawScore() {
 
   // 🔢 number (moved slightly left too)
   ctx.fillStyle = "white";
-  ctx.fillRect(canvas.width - 120, 20, 100, 50);
+  ctx.fillRect(canvas.width - 150, 10, 130, 60);
   ctx.font = "24px Arial";
   ctx.textAlign = "left"; // 👈 important change
   ctx.fillText(score, x + 30, y + 8);
