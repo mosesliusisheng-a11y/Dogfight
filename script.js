@@ -1,10 +1,11 @@
 let isPaused = false;
 let score = 0;
 
-let hasStarted = false;
-
 let maxScore = 200;
 let isGameOver = false;
+
+// 🆕 START STATE
+let hasStarted = false;
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -44,9 +45,10 @@ function isInsidePauseButton(x, y) {
   return x >= 20 && x <= 70 && y >= 20 && y <= 70;
 }
 
-// 🖱️ MOUSE
+// 🖱️ CLICK
 canvas.addEventListener("click", (e) => {
-  // 🆕 START GAME ON FIRST TAP
+
+  // 🆕 START GAME
   if (!hasStarted) {
     hasStarted = true;
     return;
@@ -68,7 +70,7 @@ canvas.addEventListener("click", (e) => {
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
 
-  // 🆕 START GAME ON FIRST TAP
+  // 🆕 START GAME
   if (!hasStarted) {
     hasStarted = true;
     return;
@@ -134,7 +136,7 @@ setInterval(() => {
 // 🔄 UPDATE GAME
 function update() {
 
-  if (isGameOver) return;
+  if (!hasStarted || isGameOver) return;
 
   // bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -171,7 +173,7 @@ function update() {
   for (let bi = bullets.length - 1; bi >= 0; bi--) {
     for (let ei = enemies.length - 1; ei >= 0; ei--) {
 
-      if (isGameOver) return; // 🛑 STOP EVERYTHING immediately
+      if (isGameOver) return;
 
       let b = bullets[bi];
       let e = enemies[ei];
@@ -190,7 +192,7 @@ function update() {
         if (score >= maxScore) {
           score = maxScore;
           isGameOver = true;
-          return; // 🛑 EXIT IMMEDIATELY (this is the key fix)
+          return;
         }
 
         break;
@@ -203,6 +205,17 @@ function update() {
 function draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 🆕 START SCREEN
+  if (!hasStarted) {
+    ctx.fillStyle = "white";
+    ctx.font = "40px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText("TAP TO START", canvas.width / 2, canvas.height / 2);
+    return; // 🛑 STOP DRAWING GAME
+  }
 
   // player
   ctx.fillStyle = "cyan";
@@ -237,16 +250,6 @@ function draw() {
 
     ctx.fillText("YOU WIN!", canvas.width / 2, canvas.height / 2);
   }
-}
-
-// 🆕 START SCREEN
-if (!hasStarted) {
-  ctx.fillStyle = "white";
-  ctx.font = "40px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-
-  ctx.fillText("TAP TO START", canvas.width / 2, canvas.height / 2);
 }
 
 // ⏸️ PAUSE BUTTON
