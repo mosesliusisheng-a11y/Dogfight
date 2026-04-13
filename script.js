@@ -1,6 +1,9 @@
 let isPaused = false;
 let score = 0;
 
+let maxScore = 200;
+let isGameOver = false;
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -162,6 +165,11 @@ function update() {
         bullets.splice(bi, 1);
         enemies.splice(ei, 1);
         score++;
+
+        if (score >= maxScore) {
+          isGameOver = true;
+        }
+
         break;
       }
     }
@@ -196,6 +204,15 @@ function draw() {
 
   drawPauseButton();
   drawHUD();
+
+  if (isGameOver) {
+    ctx.fillStyle = "white";
+    ctx.font = "50px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText("YOU WIN!", canvas.width / 2, canvas.height / 2);
+  }
 }
 
 // ⏸️ PAUSE BUTTON
@@ -244,9 +261,7 @@ function drawHUD() {
 
 // 🔁 LOOP
 function gameLoop() {
-  if (!isPaused) update();
+  if (!isPaused && !isGameOver) update();
   draw();
   requestAnimationFrame(gameLoop);
 }
-
-gameLoop();
