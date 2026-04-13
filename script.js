@@ -94,7 +94,7 @@ canvas.addEventListener("touchend", () => {
 
 // 🔫 AUTO SHOOT
 setInterval(() => {
-  if (isPaused) return;
+  if (isPaused || isGameOver) return;
 
   bullets.push({
     x: player.x + player.width / 2 - 2,
@@ -106,7 +106,7 @@ setInterval(() => {
 
 // 👾 SPAWN ENEMIES
 setInterval(() => {
-  if (isPaused) return;
+  if (isPaused || isGameOver) return;
 
   enemies.push({
     x: Math.random() * (canvas.width - 40),
@@ -119,6 +119,9 @@ setInterval(() => {
 
 // 🔄 UPDATE GAME
 function update() {
+
+  if (isGameOver) return;
+
   // bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
     bullets[i].y -= 8;
@@ -153,6 +156,9 @@ function update() {
   // collisions
   for (let bi = bullets.length - 1; bi >= 0; bi--) {
     for (let ei = enemies.length - 1; ei >= 0; ei--) {
+
+      if (isGameOver) return; // 🛑 STOP EVERYTHING immediately
+
       let b = bullets[bi];
       let e = enemies[ei];
 
@@ -164,11 +170,13 @@ function update() {
       ) {
         bullets.splice(bi, 1);
         enemies.splice(ei, 1);
+
         score++;
 
         if (score >= maxScore) {
-          score = maxScore;   // 👈 force it to stay at 200
+          score = maxScore;
           isGameOver = true;
+          return; // 🛑 EXIT IMMEDIATELY (this is the key fix)
         }
 
         break;
@@ -206,6 +214,7 @@ function draw() {
   drawPauseButton();
   drawHUD();
 
+  // 🏆 WIN SCREEN
   if (isGameOver) {
     ctx.fillStyle = "white";
     ctx.font = "50px Arial";
@@ -234,12 +243,11 @@ function drawPauseButton() {
   }
 }
 
-// 🎯 HUD (original aim + score)
+// 🎯 HUD
 function drawHUD() {
   const x = canvas.width - 120;
   const y = 50;
 
-  // aim sign
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -251,7 +259,6 @@ function drawHUD() {
   ctx.lineTo(x, y + 20);
   ctx.stroke();
 
-  // score
   ctx.fillStyle = "white";
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
@@ -266,3 +273,5 @@ function gameLoop() {
   draw();
   requestAnimationFrame(gameLoop);
 }
+
+gameLoop();
