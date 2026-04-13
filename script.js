@@ -30,6 +30,10 @@ let enemyBullets = [];
 let enemies = [];
 let isDragging = false;
 
+// 🆕 STORE INTERVALS
+let shootInterval = null;
+let enemyInterval = null;
+
 // 🎯 MOVE PLAYER
 function movePlayer(x) {
   player.x = x - player.width / 2;
@@ -45,12 +49,44 @@ function isInsidePauseButton(x, y) {
   return x >= 20 && x <= 70 && y >= 20 && y <= 70;
 }
 
+// 🆕 START GAME SYSTEMS (ONLY RUN ONCE)
+function startGame() {
+  if (hasStarted) return;
+
+  hasStarted = true;
+
+  // 🔫 AUTO SHOOT
+  shootInterval = setInterval(() => {
+    if (isPaused || isGameOver) return;
+
+    bullets.push({
+      x: player.x + player.width / 2 - 2,
+      y: player.y,
+      width: 4,
+      height: 10
+    });
+  }, 300);
+
+  // 👾 SPAWN ENEMIES
+  enemyInterval = setInterval(() => {
+    if (isPaused || isGameOver) return;
+
+    enemies.push({
+      x: Math.random() * (canvas.width - 40),
+      y: -40,
+      width: 40,
+      height: 20,
+      shootTimer: 0
+    });
+  }, 1000);
+}
+
 // 🖱️ CLICK
 canvas.addEventListener("click", (e) => {
 
   // 🆕 START GAME
   if (!hasStarted) {
-    hasStarted = true;
+    startGame();
     return;
   }
 
@@ -72,7 +108,7 @@ canvas.addEventListener("touchstart", (e) => {
 
   // 🆕 START GAME
   if (!hasStarted) {
-    hasStarted = true;
+    startGame();
     return;
   }
 
@@ -107,31 +143,6 @@ canvas.addEventListener("touchmove", (e) => {
 canvas.addEventListener("touchend", () => {
   isDragging = false;
 });
-
-// 🔫 AUTO SHOOT
-setInterval(() => {
-  if (!hasStarted || isPaused || isGameOver) return;
-
-  bullets.push({
-    x: player.x + player.width / 2 - 2,
-    y: player.y,
-    width: 4,
-    height: 10
-  });
-}, 300);
-
-// 👾 SPAWN ENEMIES
-setInterval(() => {
-  if (!hasStarted || isPaused || isGameOver) return;
-
-  enemies.push({
-    x: Math.random() * (canvas.width - 40),
-    y: -40,
-    width: 40,
-    height: 20,
-    shootTimer: 0
-  });
-}, 1000);
 
 // 🔄 UPDATE GAME
 function update() {
@@ -206,7 +217,7 @@ function draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 🆕 START SCREEN
+  // 🆕 START SCREEN (BLOCKS EVERYTHING)
   if (!hasStarted) {
     ctx.fillStyle = "white";
     ctx.font = "40px Arial";
@@ -214,7 +225,7 @@ function draw() {
     ctx.textBaseline = "middle";
 
     ctx.fillText("TAP TO START", canvas.width / 2, canvas.height / 2);
-    return; // 🛑 STOP DRAWING GAME
+    return;
   }
 
   // player
