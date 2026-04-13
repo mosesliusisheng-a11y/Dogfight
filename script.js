@@ -167,6 +167,7 @@ function update() {
         score++;
 
         if (score >= maxScore) {
+          score = maxScore;   // 👈 force it to stay at 200
           isGameOver = true;
         }
 
