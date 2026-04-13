@@ -1,6 +1,8 @@
 let isPaused = false;
 let score = 0;
 
+let hasStarted = false;
+
 let maxScore = 200;
 let isGameOver = false;
 
@@ -44,6 +46,12 @@ function isInsidePauseButton(x, y) {
 
 // 🖱️ MOUSE
 canvas.addEventListener("click", (e) => {
+  // 🆕 START GAME ON FIRST TAP
+  if (!hasStarted) {
+    hasStarted = true;
+    return;
+  }
+
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
@@ -59,6 +67,12 @@ canvas.addEventListener("click", (e) => {
 // 📱 TOUCH START
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
+
+  // 🆕 START GAME ON FIRST TAP
+  if (!hasStarted) {
+    hasStarted = true;
+    return;
+  }
 
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
@@ -94,7 +108,7 @@ canvas.addEventListener("touchend", () => {
 
 // 🔫 AUTO SHOOT
 setInterval(() => {
-  if (isPaused || isGameOver) return;
+  if (!hasStarted || isPaused || isGameOver) return;
 
   bullets.push({
     x: player.x + player.width / 2 - 2,
@@ -106,7 +120,7 @@ setInterval(() => {
 
 // 👾 SPAWN ENEMIES
 setInterval(() => {
-  if (isPaused || isGameOver) return;
+  if (!hasStarted || isPaused || isGameOver) return;
 
   enemies.push({
     x: Math.random() * (canvas.width - 40),
@@ -225,6 +239,16 @@ function draw() {
   }
 }
 
+// 🆕 START SCREEN
+if (!hasStarted) {
+  ctx.fillStyle = "white";
+  ctx.font = "40px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  ctx.fillText("TAP TO START", canvas.width / 2, canvas.height / 2);
+}
+
 // ⏸️ PAUSE BUTTON
 function drawPauseButton() {
   ctx.fillStyle = "white";
@@ -269,7 +293,7 @@ function drawHUD() {
 
 // 🔁 LOOP
 function gameLoop() {
-  if (!isPaused && !isGameOver) update();
+  if (hasStarted && !isPaused && !isGameOver) update();
   draw();
   requestAnimationFrame(gameLoop);
 }
