@@ -27,12 +27,19 @@ const player = {
 let bullets = [];
 let enemyBullets = [];
 let enemies = [];
-let isDragging = false;
 
 let shootInterval = null;
 let enemyInterval = null;
 
-// ⏸️ PAUSE (press P)
+// 📌 UI BUTTON AREA
+const pauseBtn = {
+  x: 20,
+  y: 20,
+  w: 120,
+  h: 40
+};
+
+// ⏸️ KEYBOARD PAUSE
 document.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === "p") {
     isPaused = !isPaused;
@@ -78,8 +85,23 @@ function startGame() {
   }, 1000);
 }
 
-// 🖱️ CLICK
+// 🖱️ CLICK (including pause button)
 canvas.addEventListener("click", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // ⏸️ pause button click
+  if (
+    x >= pauseBtn.x &&
+    x <= pauseBtn.x + pauseBtn.w &&
+    y >= pauseBtn.y &&
+    y <= pauseBtn.y + pauseBtn.h
+  ) {
+    isPaused = !isPaused;
+    return;
+  }
+
   if (isGameOver) {
     location.reload();
     return;
@@ -90,8 +112,7 @@ canvas.addEventListener("click", (e) => {
     return;
   }
 
-  const rect = canvas.getBoundingClientRect();
-  movePlayer(e.clientX - rect.left);
+  movePlayer(x);
 });
 
 // 📱 TOUCH
@@ -111,23 +132,17 @@ canvas.addEventListener("touchstart", (e) => {
   const rect = canvas.getBoundingClientRect();
   const t = e.touches[0];
 
-  isDragging = true;
   movePlayer(t.clientX - rect.left);
 }, { passive: false });
 
 canvas.addEventListener("touchmove", (e) => {
-  if (!isDragging) return;
-
   e.preventDefault();
+
   const rect = canvas.getBoundingClientRect();
   const t = e.touches[0];
 
   movePlayer(t.clientX - rect.left);
 }, { passive: false });
-
-canvas.addEventListener("touchend", () => {
-  isDragging = false;
-});
 
 // 🔁 UPDATE GAME
 function update() {
@@ -248,22 +263,42 @@ function draw() {
 
   drawHUD();
 
+  // ⏸️ PAUSE BUTTON
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText(isPaused ? "▶ PLAY" : "⏸ PAUSE", pauseBtn.x, pauseBtn.y);
+
   if (isPaused) {
-    ctx.fillStyle = "white";
-    ctx.font = "40px Arial";
     ctx.textAlign = "center";
+    ctx.font = "40px Arial";
     ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
   }
 
   if (isGameOver) {
-    ctx.fillStyle = "white";
-    ctx.font = "50px Arial";
     ctx.textAlign = "center";
+    ctx.font = "50px Arial";
     ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   }
 }
 
-// 🎯 CROSSHAIR (score)
+// ❤️ HEART (fixed full shape)
+function drawHeart(x, y, size = 12) {
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+
+  ctx.moveTo(x, y + size / 4);
+
+  ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + size / 3);
+  ctx.bezierCurveTo(x - size / 2, y + size / 2, x, y + size, x, y + size);
+  ctx.bezierCurveTo(x, y + size, x + size / 2, y + size / 2, x + size / 2, y + size / 3);
+  ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + size / 4);
+
+  ctx.fill();
+}
+
+// 🎯 CROSSHAIR
 function drawCross(x, y, size = 8) {
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
@@ -277,44 +312,23 @@ function drawCross(x, y, size = 8) {
   ctx.stroke();
 }
 
-// ❤️ HEART (health)
-function drawHeart(x, y, size = 12) {
-  ctx.fillStyle = "white";
-
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-
-  ctx.arc(x - size / 2, y, size / 2, 0, Math.PI, true);
-  ctx.arc(x + size / 2, y, size / 2, 0, Math.PI, true);
-
-  ctx.lineTo(x, y + size);
-  ctx.closePath();
-  ctx.fill();
-}
-
-// 🧠 HUD
+// 🧠 HUD (vertical layout)
 function drawHUD() {
-  const baseX = canvas.width - 140;
-  const baseY = 60;
+  const x = canvas.width - 80;
+  const y = 60;
 
-  const iconX = baseX;
-  const textX = baseX + 40;
-
-  const healthY = baseY;
-  const scoreY = baseY + 45;
-
-  ctx.fillStyle = "white";
-  ctx.textAlign = "left";
+  ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  // ❤️ HEALTH
-  drawHeart(iconX + 10, healthY - 8, 12);
-  ctx.font = "22px Arial";
-  ctx.fillText(`${playerHealth}/${maxHealth}`, textX, healthY);
+  // ❤️ health
+  drawHeart(x, y, 14);
+  ctx.fillStyle = "white";
+  ctx.font = "18px Arial";
+  ctx.fillText(`${playerHealth}/${maxHealth}`, x, y + 25);
 
-  // 🎯 SCORE
-  drawCross(iconX, scoreY, 8);
-  ctx.fillText(score, textX, scoreY);
+  // 🎯 score
+  drawCross(x, y + 70, 10);
+  ctx.fillText(score, x, y + 95);
 }
 
 // 🔁 LOOP
