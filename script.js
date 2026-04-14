@@ -1,3 +1,5 @@
+console.log("GAME JS LOADED");
+
 let isPaused = false;
 let score = 0;
 let maxScore = 200;
@@ -284,15 +286,8 @@ function drawPauseButton() {
 // 🎯 HUD (❤️ FIXED HERE)
 function drawHUD() {
   ctx.fillStyle = "white";
-  ctx.font = "24px Arial";
-  ctx.textAlign = "left";
-  ctx.textBaseline = "middle";
-
-  // score top right
-  ctx.fillText("Score: " + score, canvas.width - 150, 50);
-
-  // ❤️ health top left
-  ctx.fillText("❤️ " + playerHealth + "/" + maxHealth, 20, 50);
+  ctx.font = "30px Arial";
+  ctx.fillText("HUD TEST ❤️", 50, 100);
 }
 
 // 🔁 LOOP
@@ -303,3 +298,8 @@ function gameLoop() {
 }
 
 gameLoop();
+
+setInterval(() => {
+  ctx.fillStyle = "white";
+  ctx.fillText("HEALTH: 10/10", 50, 150);
+}, 1000);
