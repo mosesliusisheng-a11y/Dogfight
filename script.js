@@ -4,6 +4,9 @@ let score = 0;
 let maxScore = 200;
 let isGameOver = false;
 
+let playerHealth = 10;
+const maxHealth = 10;
+
 // 🆕 START STATE
 let hasStarted = false;
 
@@ -176,8 +179,30 @@ function update() {
 
   // enemy bullets
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
-    enemyBullets[i].y += 4;
-    if (enemyBullets[i].y > canvas.height) enemyBullets.splice(i, 1);
+    let b = enemyBullets[i];
+    b.y += 4;
+
+    // remove bullet if off screen
+    if (b.y > canvas.height) {
+      enemyBullets.splice(i, 1);
+      continue;
+    }
+
+    // ❤️ CHECK HIT PLAYER
+    if (
+      b.x < player.x + player.width &&
+      b.x + b.width > player.x &&
+      b.y < player.y + player.height &&
+      b.y + b.height > player.y
+    ) {
+      enemyBullets.splice(i, 1);
+      playerHealth--;
+
+      if (playerHealth <= 0) {
+        playerHealth = 0;
+        isGameOver = true;
+      }
+    }
   }
 
   // collisions
@@ -302,6 +327,14 @@ function drawHUD() {
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
+  // ❤️ HEALTH TEXT
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+
+  ctx.fillText(`❤️ ${playerHealth}/${maxHealth}`, 20, 90);
+  
   ctx.fillText(String(score), x + 30, y);
 }
 
