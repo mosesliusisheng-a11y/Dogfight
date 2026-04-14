@@ -4,11 +4,12 @@ let score = 0;
 let maxScore = 200;
 let isGameOver = false;
 
+// 🆕 GAME STATE
+let hasStarted = false;
+
+// ❤️ HEALTH SYSTEM (NEW)
 let playerHealth = 10;
 const maxHealth = 10;
-
-// 🆕 START STATE
-let hasStarted = false;
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -33,7 +34,7 @@ let enemyBullets = [];
 let enemies = [];
 let isDragging = false;
 
-// 🆕 STORE INTERVALS
+// 🆕 INTERVALS
 let shootInterval = null;
 let enemyInterval = null;
 
@@ -52,13 +53,12 @@ function isInsidePauseButton(x, y) {
   return x >= 20 && x <= 70 && y >= 20 && y <= 70;
 }
 
-// 🆕 START GAME SYSTEMS (ONLY RUN ONCE)
+// 🚀 START GAME
 function startGame() {
   if (hasStarted) return;
 
   hasStarted = true;
 
-  // 🔫 AUTO SHOOT
   shootInterval = setInterval(() => {
     if (isPaused || isGameOver) return;
 
@@ -70,7 +70,6 @@ function startGame() {
     });
   }, 300);
 
-  // 👾 SPAWN ENEMIES
   enemyInterval = setInterval(() => {
     if (isPaused || isGameOver) return;
 
@@ -86,8 +85,6 @@ function startGame() {
 
 // 🖱️ CLICK
 canvas.addEventListener("click", (e) => {
-
-  // 🆕 START GAME
   if (!hasStarted) {
     startGame();
     return;
@@ -109,7 +106,6 @@ canvas.addEventListener("click", (e) => {
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
 
-  // 🆕 START GAME
   if (!hasStarted) {
     startGame();
     return;
@@ -177,18 +173,17 @@ function update() {
     if (e.y > canvas.height) enemies.splice(i, 1);
   }
 
-  // enemy bullets
+  // enemy bullets + ❤️ PLAYER HIT
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     let b = enemyBullets[i];
     b.y += 4;
 
-    // remove bullet if off screen
     if (b.y > canvas.height) {
       enemyBullets.splice(i, 1);
       continue;
     }
 
-    // ❤️ CHECK HIT PLAYER
+    // ❤️ collision with player
     if (
       b.x < player.x + player.width &&
       b.x + b.width > player.x &&
@@ -205,11 +200,9 @@ function update() {
     }
   }
 
-  // collisions
+  // collisions (bullets vs enemies)
   for (let bi = bullets.length - 1; bi >= 0; bi--) {
     for (let ei = enemies.length - 1; ei >= 0; ei--) {
-
-      if (isGameOver) return;
 
       let b = bullets[bi];
       let e = enemies[ei];
@@ -228,7 +221,6 @@ function update() {
         if (score >= maxScore) {
           score = maxScore;
           isGameOver = true;
-          return;
         }
 
         break;
@@ -237,18 +229,16 @@ function update() {
   }
 }
 
-// 🎨 DRAW GAME
+// 🎨 DRAW
 function draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 🆕 START SCREEN (BLOCKS EVERYTHING)
   if (!hasStarted) {
     ctx.fillStyle = "white";
     ctx.font = "40px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-
     ctx.fillText("TAP TO START", canvas.width / 2, canvas.height / 2);
     return;
   }
@@ -277,14 +267,12 @@ function draw() {
   drawPauseButton();
   drawHUD();
 
-  // 🏆 WIN SCREEN
   if (isGameOver) {
     ctx.fillStyle = "white";
     ctx.font = "50px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-
-    ctx.fillText("YOU WIN!", canvas.width / 2, canvas.height / 2);
+    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   }
 }
 
@@ -322,20 +310,15 @@ function drawHUD() {
   ctx.lineTo(x, y + 20);
   ctx.stroke();
 
+  // 💥 SCORE
   ctx.fillStyle = "white";
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-
-  // ❤️ HEALTH TEXT
-  ctx.fillStyle = "white";
-  ctx.font = "24px Arial";
-  ctx.textAlign = "left";
-  ctx.textBaseline = "middle";
-
-  ctx.fillText(`❤️ ${playerHealth}/${maxHealth}`, 20, 90);
-  
   ctx.fillText(String(score), x + 30, y);
+
+  // ❤️ HEALTH
+  ctx.fillText(`❤️ ${playerHealth}/${maxHealth}`, 20, 90);
 }
 
 // 🔁 LOOP
