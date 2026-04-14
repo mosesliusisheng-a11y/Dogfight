@@ -1,9 +1,9 @@
-console.log("UPDATED VERSION LOADED");
+console.log("CLEAN VERSION LOADED");
 
 let isPaused = false;
 let score = 0;
 let maxScore = 200;
-let isGameOver = false;
+let gameState = "playing"; // "playing" | "won" | "lost"
 let hasStarted = false;
 
 // ❤️ HEALTH SYSTEM
@@ -31,7 +31,7 @@ let enemies = [];
 let shootInterval = null;
 let enemyInterval = null;
 
-// 📌 UI BUTTON AREA
+// 📌 PAUSE BUTTON AREA
 const pauseBtn = {
   x: 20,
   y: 20,
@@ -62,7 +62,7 @@ function startGame() {
   hasStarted = true;
 
   shootInterval = setInterval(() => {
-    if (isPaused || isGameOver) return;
+    if (isPaused || gameState !== "playing") return;
 
     bullets.push({
       x: player.x + player.width / 2 - 2,
@@ -73,7 +73,7 @@ function startGame() {
   }, 300);
 
   enemyInterval = setInterval(() => {
-    if (isPaused || isGameOver) return;
+    if (isPaused || gameState !== "playing") return;
 
     enemies.push({
       x: Math.random() * (canvas.width - 40),
@@ -85,13 +85,13 @@ function startGame() {
   }, 1000);
 }
 
-// 🖱️ CLICK (including pause button)
+// 🖱️ CLICK INPUT
 canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  // ⏸️ pause button click
+  // ⏸ pause button
   if (
     x >= pauseBtn.x &&
     x <= pauseBtn.x + pauseBtn.w &&
@@ -102,7 +102,8 @@ canvas.addEventListener("click", (e) => {
     return;
   }
 
-  if (isGameOver) {
+  // restart if game ended
+  if (gameState !== "playing") {
     location.reload();
     return;
   }
@@ -115,11 +116,11 @@ canvas.addEventListener("click", (e) => {
   movePlayer(x);
 });
 
-// 📱 TOUCH
+// 📱 TOUCH INPUT
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
 
-  if (isGameOver) {
+  if (gameState !== "playing") {
     location.reload();
     return;
   }
@@ -146,7 +147,7 @@ canvas.addEventListener("touchmove", (e) => {
 
 // 🔁 UPDATE GAME
 function update() {
-  if (!hasStarted || isGameOver || isPaused) return;
+  if (!hasStarted || gameState !== "playing" || isPaused) return;
 
   // bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -183,6 +184,7 @@ function update() {
       continue;
     }
 
+    // player hit
     if (
       b.x < player.x + player.width &&
       b.x + b.width > player.x &&
@@ -194,7 +196,7 @@ function update() {
 
       if (playerHealth <= 0) {
         playerHealth = 0;
-        isGameOver = true;
+        gameState = "lost";
       }
     }
   }
@@ -217,7 +219,7 @@ function update() {
         score++;
 
         if (score >= maxScore) {
-          isGameOver = true;
+          gameState = "won";
         }
 
         break;
@@ -263,27 +265,35 @@ function draw() {
 
   drawHUD();
 
-  // ⏸️ PAUSE BUTTON
+  // pause button
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillText(isPaused ? "▶ PLAY" : "⏸ PAUSE", pauseBtn.x, pauseBtn.y);
 
+  // pause overlay
   if (isPaused) {
     ctx.textAlign = "center";
     ctx.font = "40px Arial";
     ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
   }
 
-  if (isGameOver) {
+  // end screens
+  if (gameState === "lost") {
     ctx.textAlign = "center";
     ctx.font = "50px Arial";
     ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   }
+
+  if (gameState === "won") {
+    ctx.textAlign = "center";
+    ctx.font = "50px Arial";
+    ctx.fillText("YOU WIN!", canvas.width / 2, canvas.height / 2);
+  }
 }
 
-// ❤️ HEART (fixed full shape)
+// ❤️ HEART
 function drawHeart(x, y, size = 12) {
   ctx.fillStyle = "white";
   ctx.beginPath();
@@ -298,7 +308,7 @@ function drawHeart(x, y, size = 12) {
   ctx.fill();
 }
 
-// 🎯 CROSSHAIR
+// 🎯 CROSS
 function drawCross(x, y, size = 8) {
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
@@ -312,7 +322,7 @@ function drawCross(x, y, size = 8) {
   ctx.stroke();
 }
 
-// 🧠 HUD (vertical layout)
+// 🧠 HUD (vertical)
 function drawHUD() {
   const x = canvas.width - 80;
   const y = 60;
@@ -320,13 +330,11 @@ function drawHUD() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  // ❤️ health
   drawHeart(x, y, 14);
   ctx.fillStyle = "white";
   ctx.font = "18px Arial";
   ctx.fillText(`${playerHealth}/${maxHealth}`, x, y + 25);
 
-  // 🎯 score
   drawCross(x, y + 70, 10);
   ctx.fillText(score, x, y + 95);
 }
