@@ -307,19 +307,40 @@ function drawHUD() {
   ctx.textBaseline = "middle";
   ctx.fillText(score, aimX + 30, aimY);
 
-  // ❤️ HEALTH (TOP RIGHT)
-  const heartX = canvas.width - 60;
-  const heartY = 25;
+  // ======================
+  // ❤️ HEALTH (TOP RIGHT - CLEAN UI)
+  // ======================
 
-  ctx.textAlign = "center";
+  const heartX = canvas.width - 80;
+  const heartY = 50;
 
-  // number above heart
-  ctx.font = "18px Arial";
-  ctx.fillText(playerHealth, heartX, heartY - 10);
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
 
-  // heart icon
+  // draw bigger heart (vector style)
+  ctx.beginPath();
+  ctx.moveTo(heartX, heartY + 10);
+
+  ctx.bezierCurveTo(
+    heartX - 20, heartY - 10,
+    heartX - 40, heartY + 20,
+    heartX, heartY + 35
+  );
+
+  ctx.bezierCurveTo(
+    heartX + 40, heartY + 20,
+    heartX + 20, heartY - 10,
+    heartX, heartY + 10
+  );
+
+  ctx.stroke();
+
+  // number to the RIGHT of heart
+  ctx.fillStyle = "white";
   ctx.font = "24px Arial";
-  ctx.fillText("❤", heartX, heartY + 10);
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText(playerHealth, heartX + 55, heartY + 20);
 }
 
 // 🔁 LOOP
