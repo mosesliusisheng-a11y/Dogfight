@@ -296,29 +296,18 @@ function drawPauseButton() {
 
 // 🎯 HUD
 function drawHUD() {
-  const x = canvas.width - 120;
+  const x = canvas.width - 150;
   const y = 50;
 
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
-
-  ctx.beginPath();
-  ctx.arc(x, y, 15, 0, Math.PI * 2);
-  ctx.moveTo(x - 20, y);
-  ctx.lineTo(x + 20, y);
-  ctx.moveTo(x, y - 20);
-  ctx.lineTo(x, y + 20);
-  ctx.stroke();
-
-  // 💥 SCORE
+  // SCORE (right side)
   ctx.fillStyle = "white";
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText(String(score), x + 30, y);
+  ctx.fillText("Score: " + score, x, y);
 
-  // ❤️ HEALTH
-  ctx.fillText(`❤️ ${playerHealth}/${maxHealth}`, 20, 90);
+  // ❤️ HEALTH (left side - VERY SAFE POSITION)
+  ctx.fillText("❤️ " + playerHealth + "/" + maxHealth, 20, 50);
 }
 
 // 🔁 LOOP
