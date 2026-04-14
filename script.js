@@ -1,13 +1,10 @@
 let isPaused = false;
 let score = 0;
-
 let maxScore = 200;
 let isGameOver = false;
-
-// 🆕 GAME STATE
 let hasStarted = false;
 
-// ❤️ HEALTH SYSTEM (NEW)
+// ❤️ HEALTH SYSTEM
 let playerHealth = 10;
 const maxHealth = 10;
 
@@ -16,9 +13,6 @@ const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-
-canvas.style.width = window.innerWidth + "px";
-canvas.style.height = window.innerHeight + "px";
 canvas.style.touchAction = "none";
 
 // 🎮 PLAYER
@@ -34,7 +28,6 @@ let enemyBullets = [];
 let enemies = [];
 let isDragging = false;
 
-// 🆕 INTERVALS
 let shootInterval = null;
 let enemyInterval = null;
 
@@ -48,7 +41,7 @@ function movePlayer(x) {
   }
 }
 
-// ⏸️ PAUSE HITBOX
+// ⏸️ PAUSE BUTTON HITBOX
 function isInsidePauseButton(x, y) {
   return x >= 20 && x <= 70 && y >= 20 && y <= 70;
 }
@@ -56,7 +49,6 @@ function isInsidePauseButton(x, y) {
 // 🚀 START GAME
 function startGame() {
   if (hasStarted) return;
-
   hasStarted = true;
 
   shootInterval = setInterval(() => {
@@ -102,7 +94,7 @@ canvas.addEventListener("click", (e) => {
   movePlayer(x);
 });
 
-// 📱 TOUCH START
+// 📱 TOUCH
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
 
@@ -112,14 +104,13 @@ canvas.addEventListener("touchstart", (e) => {
   }
 
   const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
+  const t = e.touches[0];
 
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
+  const x = t.clientX - rect.left;
+  const y = t.clientY - rect.top;
 
   if (isInsidePauseButton(x, y)) {
     isPaused = !isPaused;
-    isDragging = false;
     return;
   }
 
@@ -127,25 +118,22 @@ canvas.addEventListener("touchstart", (e) => {
   movePlayer(x);
 }, { passive: false });
 
-// 📱 TOUCH MOVE
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
 
   e.preventDefault();
   const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
+  const t = e.touches[0];
 
-  movePlayer(touch.clientX - rect.left);
+  movePlayer(t.clientX - rect.left);
 }, { passive: false });
 
-// 📱 TOUCH END
 canvas.addEventListener("touchend", () => {
   isDragging = false;
 });
 
 // 🔄 UPDATE GAME
 function update() {
-
   if (!hasStarted || isGameOver) return;
 
   // bullets
@@ -173,7 +161,7 @@ function update() {
     if (e.y > canvas.height) enemies.splice(i, 1);
   }
 
-  // enemy bullets + ❤️ PLAYER HIT
+  // enemy bullets + ❤️ HIT PLAYER
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     let b = enemyBullets[i];
     b.y += 4;
@@ -183,7 +171,7 @@ function update() {
       continue;
     }
 
-    // ❤️ collision with player
+    // ❤️ collision
     if (
       b.x < player.x + player.width &&
       b.x + b.width > player.x &&
@@ -200,7 +188,7 @@ function update() {
     }
   }
 
-  // collisions (bullets vs enemies)
+  // bullet vs enemy
   for (let bi = bullets.length - 1; bi >= 0; bi--) {
     for (let ei = enemies.length - 1; ei >= 0; ei--) {
 
@@ -219,7 +207,6 @@ function update() {
         score++;
 
         if (score >= maxScore) {
-          score = maxScore;
           isGameOver = true;
         }
 
@@ -294,19 +281,17 @@ function drawPauseButton() {
   }
 }
 
-// 🎯 HUD
+// 🎯 HUD (❤️ FIXED HERE)
 function drawHUD() {
-  const x = canvas.width - 150;
-  const y = 50;
-
-  // SCORE (right side)
   ctx.fillStyle = "white";
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText("Score: " + score, x, y);
 
-  // ❤️ HEALTH (left side - VERY SAFE POSITION)
+  // score top right
+  ctx.fillText("Score: " + score, canvas.width - 150, 50);
+
+  // ❤️ health top left
   ctx.fillText("❤️ " + playerHealth + "/" + maxHealth, 20, 50);
 }
 
