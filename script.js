@@ -1,4 +1,3 @@
-console.log("SCRIPT LOADED ✔️");
 console.log("GAME JS LOADED");
 
 let isPaused = false;
@@ -110,8 +109,9 @@ canvas.addEventListener("touchstart", (e) => {
   const t = e.touches[0];
 
   const x = t.clientX - rect.left;
+  const y = t.clientY - rect.top;
 
-  if (isInsidePauseButton(x, t.clientY - rect.top)) {
+  if (isInsidePauseButton(x, y)) {
     isPaused = !isPaused;
     return;
   }
@@ -163,7 +163,7 @@ function update() {
     if (e.y > canvas.height) enemies.splice(i, 1);
   }
 
-  // enemy bullets + ❤️ HIT PLAYER
+  // enemy bullets + hit player
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     let b = enemyBullets[i];
     b.y += 4;
@@ -282,13 +282,13 @@ function drawPauseButton() {
   }
 }
 
-// 🎯 UPDATED HUD (FIXED LAYOUT)
+// 🎯 HUD (FIXED DESIGN)
 function drawHUD() {
 
   const aimX = canvas.width - 120;
   const aimY = 50;
 
-  // AIM SYMBOL
+  // AIM CROSSHAIR
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -300,47 +300,27 @@ function drawHUD() {
   ctx.lineTo(aimX, aimY + 20);
   ctx.stroke();
 
-  // SCORE (next to aim)
+  // SCORE (right of aim)
   ctx.fillStyle = "white";
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.fillText(score, aimX + 30, aimY);
 
-  // ======================
-  // ❤️ HEALTH (TOP RIGHT - CLEAN UI)
-  // ======================
-
+  // ❤️ HEALTH (top right clean layout)
   const heartX = canvas.width - 80;
-  const heartY = 50;
+  const heartY = 40;
 
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
+  ctx.fillStyle = "white";
 
-  // draw bigger heart (vector style)
-  ctx.beginPath();
-  ctx.moveTo(heartX, heartY + 10);
-
-  ctx.bezierCurveTo(
-    heartX - 20, heartY - 10,
-    heartX - 40, heartY + 20,
-    heartX, heartY + 35
-  );
-
-  ctx.bezierCurveTo(
-    heartX + 40, heartY + 20,
-    heartX + 20, heartY - 10,
-    heartX, heartY + 10
-  );
-
-  ctx.stroke();
+  // heart symbol (scaled properly)
+  ctx.font = "26px Arial";
+  ctx.textAlign = "left";
+  ctx.fillText("❤", heartX, heartY);
 
   // number to the RIGHT of heart
-  ctx.fillStyle = "white";
   ctx.font = "24px Arial";
-  ctx.textAlign = "left";
-  ctx.textBaseline = "middle";
-  ctx.fillText(playerHealth, heartX + 55, heartY + 20);
+  ctx.fillText(playerHealth, heartX + 35, heartY);
 }
 
 // 🔁 LOOP
