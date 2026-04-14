@@ -289,7 +289,7 @@ function drawHUD() {
   const aimX = canvas.width - 120;
   const aimY = 50;
 
-  // crosshair (unchanged)
+  // crosshair
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -303,21 +303,25 @@ function drawHUD() {
 
   const rightX = aimX + 35;
 
+  // 👇 spacing control (THIS is what separates them)
+  const healthY = aimY - 40;
+  const scoreY = aimY + 25;
+
+  // ❤️ heart
   ctx.fillStyle = "white";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
-  // ❤️ HEART (bigger + aligned vertically above score)
   ctx.font = "28px Arial";
-  ctx.fillText("❤", rightX, aimY - 35);
+  ctx.fillText("❤", rightX, healthY);
 
-  // ❤️ HEALTH VALUE (10/10 format)
+  // ❤️ health number (10/10 style)
   ctx.font = "20px Arial";
-  ctx.fillText(`${playerHealth}/${maxHealth}`, rightX + 30, aimY - 35);
+  ctx.fillText(`${playerHealth}/${maxHealth}`, rightX + 30, healthY);
 
-  // 🎯 SCORE (below health)
+  // 🎯 score (separated below)
   ctx.font = "24px Arial";
-  ctx.fillText(score, rightX, aimY + 10);
+  ctx.fillText(score, rightX, scoreY);
 }
 
 // 🔁 LOOP
