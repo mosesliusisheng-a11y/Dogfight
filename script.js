@@ -1,3 +1,4 @@
+console.log("SCRIPT LOADED ✔️");
 console.log("GAME JS LOADED");
 
 let isPaused = false;
