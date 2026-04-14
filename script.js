@@ -1,4 +1,4 @@
-console.log("GAME JS LOADED - NEW VERSION");
+console.log("GAME JS LOADED - CLEAN VERSION");
 
 let isPaused = false;
 let score = 0;
@@ -15,7 +15,6 @@ const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-canvas.style.touchAction = "none";
 
 // 🎮 PLAYER
 const player = {
@@ -41,11 +40,6 @@ function movePlayer(x) {
   if (player.x > canvas.width - player.width) {
     player.x = canvas.width - player.width;
   }
-}
-
-// ⏸️ PAUSE BUTTON HITBOX
-function isInsidePauseButton(x, y) {
-  return x >= 20 && x <= 70 && y >= 20 && y <= 70;
 }
 
 // 🚀 START GAME
@@ -79,6 +73,11 @@ function startGame() {
 
 // 🖱️ CLICK
 canvas.addEventListener("click", (e) => {
+  if (isGameOver) {
+    location.reload();
+    return;
+  }
+
   if (!hasStarted) {
     startGame();
     return;
@@ -86,42 +85,32 @@ canvas.addEventListener("click", (e) => {
 
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-
-  if (isInsidePauseButton(x, y)) {
-    isPaused = !isPaused;
-    return;
-  }
 
   movePlayer(x);
 });
 
 // 📱 TOUCH
-canvas.addEventListener(
-  "touchstart",
-  (e) => {
-    e.preventDefault();
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
 
-    if (!hasStarted) {
-      startGame();
-      return;
-    }
+  if (isGameOver) {
+    location.reload();
+    return;
+  }
 
-    const rect = canvas.getBoundingClientRect();
-    const t = e.touches[0];
+  if (!hasStarted) {
+    startGame();
+    return;
+  }
 
-    const x = t.clientX - rect.left;
+  const rect = canvas.getBoundingClientRect();
+  const t = e.touches[0];
 
-    if (isInsidePauseButton(x, t.clientY - rect.top)) {
-      isPaused = !isPaused;
-      return;
-    }
+  const x = t.clientX - rect.left;
 
-    isDragging = true;
-    movePlayer(x);
-  },
-  { passive: false }
-);
+  isDragging = true;
+  movePlayer(x);
+}, { passive: false });
 
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
@@ -137,7 +126,7 @@ canvas.addEventListener("touchend", () => {
   isDragging = false;
 });
 
-// 🔄 UPDATE GAME
+// 🔁 UPDATE GAME
 function update() {
   if (!hasStarted || isGameOver || isPaused) return;
 
@@ -166,7 +155,7 @@ function update() {
     if (e.y > canvas.height) enemies.splice(i, 1);
   }
 
-  // enemy bullets + player hit
+  // enemy bullets
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     let b = enemyBullets[i];
     b.y += 4;
@@ -192,7 +181,7 @@ function update() {
     }
   }
 
-  // bullet vs enemy
+  // collisions
   for (let bi = bullets.length - 1; bi >= 0; bi--) {
     for (let ei = enemies.length - 1; ei >= 0; ei--) {
       let b = bullets[bi];
@@ -254,7 +243,6 @@ function draw() {
   ctx.fillStyle = "orange";
   enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
 
-  drawPauseButton();
   drawHUD();
 
   if (isGameOver) {
@@ -266,28 +254,22 @@ function draw() {
   }
 }
 
-// ⏸️ PAUSE BUTTON
-function drawPauseButton() {
-  ctx.fillStyle = "white";
-  const size = 40;
+// 🎯 HUD CROSSHAIR (single system)
+function drawCross(x, y, size = 8) {
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
 
-  if (isPaused) {
-    ctx.beginPath();
-    ctx.moveTo(20, 20);
-    ctx.lineTo(20, 20 + size);
-    ctx.lineTo(20 + size, 20 + size / 2);
-    ctx.closePath();
-    ctx.fill();
-  } else {
-    ctx.fillRect(20, 20, 10, size);
-    ctx.fillRect(35, 20, 10, size);
-  }
+  ctx.beginPath();
+  ctx.arc(x, y, size, 0, Math.PI * 2);
+  ctx.moveTo(x - size - 5, y);
+  ctx.lineTo(x + size + 5, y);
+  ctx.moveTo(x, y - size - 5);
+  ctx.lineTo(x, y + size + 5);
+  ctx.stroke();
 }
 
-// 🎯 HUD (HEALTH ABOVE SCORE FIXED)
+// 🧠 HUD (clean 2-row system)
 function drawHUD() {
-  console.log("HUD VERSION LOADED");
-
   const baseX = canvas.width - 140;
   const baseY = 60;
 
@@ -301,28 +283,15 @@ function drawHUD() {
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
-  // ❤️ HEALTH ROW (crosshair icon + value)
+  // ❤️ HEALTH
   drawCross(iconX, healthY, 8);
   ctx.font = "22px Arial";
   ctx.fillText(`${playerHealth}/${maxHealth}`, textX, healthY);
 
-  // 🎯 SCORE ROW (same icon style + value)
+  // 🎯 SCORE
   drawCross(iconX, scoreY, 8);
   ctx.font = "22px Arial";
   ctx.fillText(score, textX, scoreY);
-}
-
-function drawCross(x, y, size = 10) {
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
-
-  ctx.beginPath();
-  ctx.arc(x, y, size, 0, Math.PI * 2);
-  ctx.moveTo(x - size - 5, y);
-  ctx.lineTo(x + size + 5, y);
-  ctx.moveTo(x, y - size - 5);
-  ctx.lineTo(x, y + size + 5);
-  ctx.stroke();
 }
 
 // 🔁 LOOP
