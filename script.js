@@ -286,6 +286,8 @@ function drawPauseButton() {
 
 // 🎯 HUD (HEALTH ABOVE SCORE FIXED)
 function drawHUD() {
+  console.log("HUD VERSION LOADED"); // 🔍 debug check
+
   const aimX = canvas.width - 140;
   const aimY = 50;
 
@@ -304,11 +306,9 @@ function drawHUD() {
   const iconX = aimX;
   const textX = aimX + 35;
 
-  // 👇 TOP ROW = HEALTH
-  const healthY = aimY + 40;
-
-  // 👇 BOTTOM ROW = SCORE
-  const scoreY = aimY + 80;
+  // 📍 layout spacing
+  const healthY = aimY + 40; // TOP ROW
+  const scoreY = aimY + 80;  // BOTTOM ROW
 
   ctx.fillStyle = "white";
   ctx.textAlign = "left";
