@@ -254,7 +254,7 @@ function draw() {
   }
 }
 
-// 🎯 HUD CROSSHAIR (single system)
+// 🎯 CROSSHAIR (for score only)
 function drawCross(x, y, size = 8) {
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
@@ -268,7 +268,23 @@ function drawCross(x, y, size = 8) {
   ctx.stroke();
 }
 
-// 🧠 HUD (clean 2-row system)
+// ❤️ HEART (for health)
+function drawHeart(x, y, size = 10) {
+  ctx.fillStyle = "white";
+
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+
+  ctx.bezierCurveTo(x, y - size, x - size, y - size, x - size, y);
+  ctx.bezierCurveTo(x - size, y + size, x, y + size * 1.5, x, y + size * 2);
+  ctx.bezierCurveTo(x, y + size * 1.5, x + size, y + size, x + size, y);
+  ctx.bezierCurveTo(x + size, y - size, x, y - size, x, y);
+
+  ctx.closePath();
+  ctx.fill();
+}
+
+// 🧠 HUD
 function drawHUD() {
   const baseX = canvas.width - 140;
   const baseY = 60;
@@ -284,7 +300,7 @@ function drawHUD() {
   ctx.textBaseline = "middle";
 
   // ❤️ HEALTH
-  drawCross(iconX, healthY, 8);
+  drawHeart(iconX, healthY - 6, 6);
   ctx.font = "22px Arial";
   ctx.fillText(`${playerHealth}/${maxHealth}`, textX, healthY);
 
