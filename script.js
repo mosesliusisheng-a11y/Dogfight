@@ -288,52 +288,40 @@ function drawPauseButton() {
 function drawHUD() {
   console.log("HUD VERSION LOADED");
 
-  const aimX = canvas.width - 140;
-  const aimY = 50;
+  const baseX = canvas.width - 140;
+  const baseY = 60;
 
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
+  const iconX = baseX;
+  const textX = baseX + 40;
 
-  // 🎯 MAIN CROSSHAIR (top-right anchor)
-  ctx.beginPath();
-  ctx.arc(aimX, aimY, 15, 0, Math.PI * 2);
-  ctx.moveTo(aimX - 20, aimY);
-  ctx.lineTo(aimX + 20, aimY);
-  ctx.moveTo(aimX, aimY - 20);
-  ctx.lineTo(aimX, aimY + 20);
-  ctx.stroke();
-
-  const iconX = aimX;
-  const textX = aimX + 35;
-
-  const healthY = aimY + 40;
-  const scoreY = aimY + 80;
+  const healthY = baseY;
+  const scoreY = baseY + 45;
 
   ctx.fillStyle = "white";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
-  // ❤️ HEALTH ROW (no emoji, use small drawn crosshair icon)
-  drawSmallCross(iconX, healthY);
-  ctx.font = "24px Arial";
+  // ❤️ HEALTH ROW (crosshair icon + value)
+  drawCross(iconX, healthY, 8);
+  ctx.font = "22px Arial";
   ctx.fillText(`${playerHealth}/${maxHealth}`, textX, healthY);
 
-  // 🎯 SCORE ROW (same style icon)
-  drawSmallCross(iconX, scoreY);
-  ctx.font = "24px Arial";
+  // 🎯 SCORE ROW (same icon style + value)
+  drawCross(iconX, scoreY, 8);
+  ctx.font = "22px Arial";
   ctx.fillText(score, textX, scoreY);
 }
 
-function drawSmallCross(x, y) {
+function drawCross(x, y, size = 10) {
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
   ctx.beginPath();
-  ctx.arc(x, y, 6, 0, Math.PI * 2);
-  ctx.moveTo(x - 8, y);
-  ctx.lineTo(x + 8, y);
-  ctx.moveTo(x, y - 8);
-  ctx.lineTo(x, y + 8);
+  ctx.arc(x, y, size, 0, Math.PI * 2);
+  ctx.moveTo(x - size - 5, y);
+  ctx.lineTo(x + size + 5, y);
+  ctx.moveTo(x, y - size - 5);
+  ctx.lineTo(x, y + size + 5);
   ctx.stroke();
 }
 
