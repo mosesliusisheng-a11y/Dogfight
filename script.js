@@ -109,9 +109,8 @@ canvas.addEventListener("touchstart", (e) => {
   const t = e.touches[0];
 
   const x = t.clientX - rect.left;
-  const y = t.clientY - rect.top;
 
-  if (isInsidePauseButton(x, y)) {
+  if (isInsidePauseButton(x, t.clientY - rect.top)) {
     isPaused = !isPaused;
     return;
   }
@@ -173,7 +172,6 @@ function update() {
       continue;
     }
 
-    // ❤️ collision
     if (
       b.x < player.x + player.width &&
       b.x + b.width > player.x &&
@@ -283,15 +281,13 @@ function drawPauseButton() {
   }
 }
 
-// 🎯 HUD (❤️ FIXED HERE)
+// 🎯 UPDATED HUD (FIXED LAYOUT)
 function drawHUD() {
 
-  // ======================
-  // 🎯 AIM / CROSSHAIR + SCORE
-  // ======================
   const aimX = canvas.width - 120;
   const aimY = 50;
 
+  // AIM SYMBOL
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -303,31 +299,21 @@ function drawHUD() {
   ctx.lineTo(aimX, aimY + 20);
   ctx.stroke();
 
-  // SCORE (next to aim symbol)
+  // SCORE (next to aim)
   ctx.fillStyle = "white";
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.fillText(score, aimX + 30, aimY);
 
-  // ======================
-  // ❤️ HEALTH (TOP LEFT, CLEAR SPACE)
-  // ======================
-  ctx.fillStyle = "white";
-  ctx.font = "24px Arial";
-  ctx.textAlign = "left";
-  ctx.textBaseline = "middle";
-
-  // ======================
-  // 🟡 SCORE (BELOW HEALTH)
-  // ======================
+  // ❤️ HEALTH (TOP RIGHT)
   const heartX = canvas.width - 60;
   const heartY = 25;
 
-  // number above heart
-  ctx.fillStyle = "white";
-  ctx.font = "18px Arial";
   ctx.textAlign = "center";
+
+  // number above heart
+  ctx.font = "18px Arial";
   ctx.fillText(playerHealth, heartX, heartY - 10);
 
   // heart icon
