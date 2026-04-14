@@ -1,4 +1,4 @@
-console.log("GAME JS LOADED - CLEAN VERSION");
+console.log("UPDATED VERSION LOADED");
 
 let isPaused = false;
 let score = 0;
@@ -31,6 +31,13 @@ let isDragging = false;
 
 let shootInterval = null;
 let enemyInterval = null;
+
+// ⏸️ PAUSE (press P)
+document.addEventListener("keydown", (e) => {
+  if (e.key.toLowerCase() === "p") {
+    isPaused = !isPaused;
+  }
+});
 
 // 🎯 MOVE PLAYER
 function movePlayer(x) {
@@ -84,9 +91,7 @@ canvas.addEventListener("click", (e) => {
   }
 
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-
-  movePlayer(x);
+  movePlayer(e.clientX - rect.left);
 });
 
 // 📱 TOUCH
@@ -106,10 +111,8 @@ canvas.addEventListener("touchstart", (e) => {
   const rect = canvas.getBoundingClientRect();
   const t = e.touches[0];
 
-  const x = t.clientX - rect.left;
-
   isDragging = true;
-  movePlayer(x);
+  movePlayer(t.clientX - rect.left);
 }, { passive: false });
 
 canvas.addEventListener("touchmove", (e) => {
@@ -245,16 +248,22 @@ function draw() {
 
   drawHUD();
 
+  if (isPaused) {
+    ctx.fillStyle = "white";
+    ctx.font = "40px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
+  }
+
   if (isGameOver) {
     ctx.fillStyle = "white";
     ctx.font = "50px Arial";
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
     ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   }
 }
 
-// 🎯 CROSSHAIR (for score only)
+// 🎯 CROSSHAIR (score)
 function drawCross(x, y, size = 8) {
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
@@ -268,18 +277,17 @@ function drawCross(x, y, size = 8) {
   ctx.stroke();
 }
 
-// ❤️ HEART (for health)
-function drawHeart(x, y, size = 10) {
+// ❤️ HEART (health)
+function drawHeart(x, y, size = 12) {
   ctx.fillStyle = "white";
 
   ctx.beginPath();
   ctx.moveTo(x, y);
 
-  ctx.bezierCurveTo(x, y - size, x - size, y - size, x - size, y);
-  ctx.bezierCurveTo(x - size, y + size, x, y + size * 1.5, x, y + size * 2);
-  ctx.bezierCurveTo(x, y + size * 1.5, x + size, y + size, x + size, y);
-  ctx.bezierCurveTo(x + size, y - size, x, y - size, x, y);
+  ctx.arc(x - size / 2, y, size / 2, 0, Math.PI, true);
+  ctx.arc(x + size / 2, y, size / 2, 0, Math.PI, true);
 
+  ctx.lineTo(x, y + size);
   ctx.closePath();
   ctx.fill();
 }
@@ -300,13 +308,12 @@ function drawHUD() {
   ctx.textBaseline = "middle";
 
   // ❤️ HEALTH
-  drawHeart(iconX, healthY - 6, 6);
+  drawHeart(iconX + 10, healthY - 8, 12);
   ctx.font = "22px Arial";
   ctx.fillText(`${playerHealth}/${maxHealth}`, textX, healthY);
 
   // 🎯 SCORE
   drawCross(iconX, scoreY, 8);
-  ctx.font = "22px Arial";
   ctx.fillText(score, textX, scoreY);
 }
 
