@@ -326,8 +326,3 @@ function gameLoop() {
 }
 
 gameLoop();
-
-setInterval(() => {
-  ctx.fillStyle = "white";
-  ctx.fillText("HEALTH: 10/10", 50, 150);
-}, 1000);
