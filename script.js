@@ -287,21 +287,28 @@ function drawPauseButton() {
 function drawHUD() {
 
   // ======================
-  // 🎯 AIM / CROSSHAIR (UNCHANGED POSITION)
+  // 🎯 AIM / CROSSHAIR + SCORE
   // ======================
-  const x = canvas.width - 120;
-  const y = 50;
+  const aimX = canvas.width - 120;
+  const aimY = 50;
 
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
   ctx.beginPath();
-  ctx.arc(x, y, 15, 0, Math.PI * 2);
-  ctx.moveTo(x - 20, y);
-  ctx.lineTo(x + 20, y);
-  ctx.moveTo(x, y - 20);
-  ctx.lineTo(x, y + 20);
+  ctx.arc(aimX, aimY, 15, 0, Math.PI * 2);
+  ctx.moveTo(aimX - 20, aimY);
+  ctx.lineTo(aimX + 20, aimY);
+  ctx.moveTo(aimX, aimY - 20);
+  ctx.lineTo(aimX, aimY + 20);
   ctx.stroke();
+
+  // SCORE (next to aim symbol)
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText(score, aimX + 30, aimY);
 
   // ======================
   // ❤️ HEALTH (TOP LEFT, CLEAR SPACE)
@@ -310,12 +317,22 @@ function drawHUD() {
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText(`❤️ ${playerHealth}/${maxHealth}`, 20, 30);
 
   // ======================
   // 🟡 SCORE (BELOW HEALTH)
   // ======================
-  ctx.fillText(`Score: ${score}`, 20, 70);
+  const heartX = canvas.width - 60;
+  const heartY = 25;
+
+  // number above heart
+  ctx.fillStyle = "white";
+  ctx.font = "18px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(playerHealth, heartX, heartY - 10);
+
+  // heart icon
+  ctx.font = "24px Arial";
+  ctx.fillText("❤", heartX, heartY + 10);
 }
 
 // 🔁 LOOP
