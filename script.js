@@ -286,13 +286,13 @@ function drawPauseButton() {
 
 // 🎯 HUD (HEALTH ABOVE SCORE FIXED)
 function drawHUD() {
-  const aimX = canvas.width - 120;
+  const aimX = canvas.width - 140;
   const aimY = 50;
 
-  // crosshair
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
+  // 🎯 AIM ICON
   ctx.beginPath();
   ctx.arc(aimX, aimY, 15, 0, Math.PI * 2);
   ctx.moveTo(aimX - 20, aimY);
@@ -301,27 +301,27 @@ function drawHUD() {
   ctx.lineTo(aimX, aimY + 20);
   ctx.stroke();
 
-  const rightX = aimX + 35;
+  const iconX = aimX;
+  const textX = aimX + 35;
 
-  // 👇 spacing control (THIS is what separates them)
-  const healthY = aimY - 40;
-  const scoreY = aimY + 25;
+  // 👇 TOP ROW = HEALTH
+  const healthY = aimY + 40;
 
-  // ❤️ heart
+  // 👇 BOTTOM ROW = SCORE
+  const scoreY = aimY + 80;
+
   ctx.fillStyle = "white";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
-  ctx.font = "28px Arial";
-  ctx.fillText("❤", rightX, healthY);
-
-  // ❤️ health number (10/10 style)
-  ctx.font = "20px Arial";
-  ctx.fillText(`${playerHealth}/${maxHealth}`, rightX + 30, healthY);
-
-  // 🎯 score (separated below)
+  // ❤️ HEALTH (TOP)
   ctx.font = "24px Arial";
-  ctx.fillText(score, rightX, scoreY);
+  ctx.fillText("❤", iconX, healthY);
+  ctx.fillText(`${playerHealth}/${maxHealth}`, textX, healthY);
+
+  // 🎯 SCORE (BOTTOM)
+  ctx.fillText("🎯", iconX, scoreY);
+  ctx.fillText(score, textX, scoreY);
 }
 
 // 🔁 LOOP
