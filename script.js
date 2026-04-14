@@ -300,27 +300,22 @@ function drawHUD() {
   ctx.lineTo(aimX, aimY + 20);
   ctx.stroke();
 
-  // SCORE (right of aim)
+  const rightX = aimX + 30;
+
+  // ❤️ HEALTH (above score)
   ctx.fillStyle = "white";
-  ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText(score, aimX + 30, aimY);
 
-  // ❤️ HEALTH (top right clean layout)
-  const heartX = canvas.width - 80;
-  const heartY = 40;
-
-  ctx.fillStyle = "white";
-
-  // heart symbol (scaled properly)
   ctx.font = "26px Arial";
-  ctx.textAlign = "left";
-  ctx.fillText("❤", heartX, heartY);
+  ctx.fillText("❤", rightX, aimY - 25);
 
-  // number to the RIGHT of heart
   ctx.font = "24px Arial";
-  ctx.fillText(playerHealth, heartX + 35, heartY);
+  ctx.fillText(playerHealth, rightX + 35, aimY - 25);
+
+  // 🎯 SCORE (below health)
+  ctx.font = "24px Arial";
+  ctx.fillText(score, rightX, aimY + 10);
 }
 
 // 🔁 LOOP
