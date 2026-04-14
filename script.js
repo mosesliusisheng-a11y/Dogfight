@@ -285,9 +285,37 @@ function drawPauseButton() {
 
 // 🎯 HUD (❤️ FIXED HERE)
 function drawHUD() {
+
+  // ======================
+  // 🎯 AIM / CROSSHAIR (UNCHANGED POSITION)
+  // ======================
+  const x = canvas.width - 120;
+  const y = 50;
+
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  ctx.arc(x, y, 15, 0, Math.PI * 2);
+  ctx.moveTo(x - 20, y);
+  ctx.lineTo(x + 20, y);
+  ctx.moveTo(x, y - 20);
+  ctx.lineTo(x, y + 20);
+  ctx.stroke();
+
+  // ======================
+  // ❤️ HEALTH (TOP LEFT, CLEAR SPACE)
+  // ======================
   ctx.fillStyle = "white";
-  ctx.font = "30px Arial";
-  ctx.fillText("HUD TEST ❤️", 50, 100);
+  ctx.font = "24px Arial";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText(`❤️ ${playerHealth}/${maxHealth}`, 20, 30);
+
+  // ======================
+  // 🟡 SCORE (BELOW HEALTH)
+  // ======================
+  ctx.fillText(`Score: ${score}`, 20, 70);
 }
 
 // 🔁 LOOP
