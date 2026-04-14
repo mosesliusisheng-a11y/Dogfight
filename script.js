@@ -1,4 +1,4 @@
-console.log("GAME JS LOADED");
+console.log("GAME JS LOADED - NEW VERSION");
 
 let isPaused = false;
 let score = 0;
@@ -97,28 +97,31 @@ canvas.addEventListener("click", (e) => {
 });
 
 // 📱 TOUCH
-canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault();
+canvas.addEventListener(
+  "touchstart",
+  (e) => {
+    e.preventDefault();
 
-  if (!hasStarted) {
-    startGame();
-    return;
-  }
+    if (!hasStarted) {
+      startGame();
+      return;
+    }
 
-  const rect = canvas.getBoundingClientRect();
-  const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches[0];
 
-  const x = t.clientX - rect.left;
-  const y = t.clientY - rect.top;
+    const x = t.clientX - rect.left;
 
-  if (isInsidePauseButton(x, y)) {
-    isPaused = !isPaused;
-    return;
-  }
+    if (isInsidePauseButton(x, t.clientY - rect.top)) {
+      isPaused = !isPaused;
+      return;
+    }
 
-  isDragging = true;
-  movePlayer(x);
-}, { passive: false });
+    isDragging = true;
+    movePlayer(x);
+  },
+  { passive: false }
+);
 
 canvas.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
@@ -136,7 +139,7 @@ canvas.addEventListener("touchend", () => {
 
 // 🔄 UPDATE GAME
 function update() {
-  if (!hasStarted || isGameOver) return;
+  if (!hasStarted || isGameOver || isPaused) return;
 
   // bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -163,7 +166,7 @@ function update() {
     if (e.y > canvas.height) enemies.splice(i, 1);
   }
 
-  // enemy bullets + hit player
+  // enemy bullets + player hit
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     let b = enemyBullets[i];
     b.y += 4;
@@ -192,7 +195,6 @@ function update() {
   // bullet vs enemy
   for (let bi = bullets.length - 1; bi >= 0; bi--) {
     for (let ei = enemies.length - 1; ei >= 0; ei--) {
-
       let b = bullets[bi];
       let e = enemies[ei];
 
@@ -282,13 +284,12 @@ function drawPauseButton() {
   }
 }
 
-// 🎯 HUD (FIXED DESIGN)
+// 🎯 HUD (HEALTH ABOVE SCORE FIXED)
 function drawHUD() {
-
   const aimX = canvas.width - 120;
   const aimY = 50;
 
-  // AIM CROSSHAIR
+  // crosshair
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
 
@@ -302,25 +303,25 @@ function drawHUD() {
 
   const rightX = aimX + 30;
 
-  // ❤️ HEALTH (above score)
   ctx.fillStyle = "white";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
+  // ❤️ health above
   ctx.font = "26px Arial";
   ctx.fillText("❤", rightX, aimY - 25);
 
   ctx.font = "24px Arial";
   ctx.fillText(playerHealth, rightX + 35, aimY - 25);
 
-  // 🎯 SCORE (below health)
+  // 🎯 score below
   ctx.font = "24px Arial";
   ctx.fillText(score, rightX, aimY + 10);
 }
 
 // 🔁 LOOP
 function gameLoop() {
-  if (hasStarted && !isPaused && !isGameOver) update();
+  update();
   draw();
   requestAnimationFrame(gameLoop);
 }
