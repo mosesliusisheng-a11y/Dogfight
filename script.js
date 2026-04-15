@@ -6,6 +6,7 @@ let maxScore = 200;
 let gameState = "playing"; // "playing" | "won" | "lost"
 let hasStarted = false;
 
+// ⏱️ TIMER
 let startTime = 0;
 let elapsedTime = 0;
 
@@ -69,8 +70,8 @@ function startGame() {
   if (hasStarted) return;
   hasStarted = true;
 
-  startTime = Date.now();
-  
+  startTime = Date.now(); // ⏱️ start timer
+
   shootInterval = setInterval(() => {
     if (isPaused || gameState !== "playing") return;
 
@@ -95,40 +96,30 @@ function startGame() {
   }, 1000);
 }
 
-// 🖱️ CLICK INPUT (desktop)
+// 🖱️ CLICK INPUT
 canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-
-  handleInput(x, y);
+  handleInput(e.clientX - rect.left, e.clientY - rect.top);
 });
 
-// 📱 TOUCH INPUT (tablet/mobile)
+// 📱 TOUCH INPUT
 canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
-
   const rect = canvas.getBoundingClientRect();
   const t = e.touches[0];
-
-  const x = t.clientX - rect.left;
-  const y = t.clientY - rect.top;
-
-  handleInput(x, y);
+  handleInput(t.clientX - rect.left, t.clientY - rect.top);
 }, { passive: false });
 
 canvas.addEventListener("touchmove", (e) => {
   e.preventDefault();
-
   const rect = canvas.getBoundingClientRect();
   const t = e.touches[0];
-
   movePlayer(t.clientX - rect.left);
 }, { passive: false });
 
-// 🎮 UNIFIED INPUT HANDLER
+// 🎮 INPUT HANDLER
 function handleInput(x, y) {
-  // ⏸ pause button
+  // pause button
   if (
     x >= pauseBtn.x &&
     x <= pauseBtn.x + pauseBtn.w &&
@@ -144,10 +135,7 @@ function handleInput(x, y) {
     return;
   }
 
-  // lock input if game ended
-  if (gameState !== "playing") {
-  return;
-  }
+  if (gameState !== "playing") return;
 
   if (!hasStarted) {
     startGame();
@@ -157,11 +145,11 @@ function handleInput(x, y) {
   movePlayer(x);
 }
 
-// 🔁 UPDATE GAME
+// 🔁 UPDATE
 function update() {
 
-  // ⏱️ TIMER UPDATE (ADD THIS BLOCK)
-  if (gameState === "playing" && !isPaused) {
+  // ⏱️ TIMER UPDATE
+  if (gameState === "playing" && !isPaused && hasStarted) {
     elapsedTime = Date.now() - startTime;
   }
 
@@ -202,7 +190,6 @@ function update() {
       continue;
     }
 
-    // player hit
     if (
       b.x < player.x + player.width &&
       b.x + b.width > player.x &&
@@ -246,6 +233,25 @@ function update() {
   }
 }
 
+// ⏱️ DRAW TIMER
+function drawTimer() {
+  const totalSeconds = Math.floor(elapsedTime / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const text =
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0");
+
+  ctx.fillStyle = "white";
+  ctx.font = "28px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+
+  ctx.fillText(text, canvas.width / 2, 20);
+}
+
 // 🎨 DRAW
 function draw() {
   ctx.fillStyle = "black";
@@ -259,6 +265,8 @@ function draw() {
     ctx.fillText("TAP TO START", canvas.width / 2, canvas.height / 2);
     return;
   }
+
+  drawTimer(); // ⬅️ IMPORTANT
 
   // player
   ctx.fillStyle = "cyan";
@@ -281,24 +289,21 @@ function draw() {
   ctx.fillStyle = "orange";
   enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
 
-  drawTimer();
   drawHUD();
 
-  // pause button (FIXED: no emoji rendering)
+  // pause button
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillText(isPaused ? "▶️ PLAY" : "⏸️ PAUSE", pauseBtn.x, pauseBtn.y);
 
-  // pause overlay
   if (isPaused) {
     ctx.textAlign = "center";
     ctx.font = "40px Arial";
     ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
   }
 
-  // end screens
   if (gameState === "lost") {
     ctx.textAlign = "center";
     ctx.font = "50px Arial";
@@ -316,14 +321,11 @@ function draw() {
 function drawHeart(x, y, size = 12) {
   ctx.fillStyle = "white";
   ctx.beginPath();
-
   ctx.moveTo(x, y + size / 4);
-
   ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + size / 3);
   ctx.bezierCurveTo(x - size / 2, y + size / 2, x, y + size, x, y + size);
   ctx.bezierCurveTo(x, y + size, x + size / 2, y + size / 2, x + size / 2, y + size / 3);
   ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + size / 4);
-
   ctx.fill();
 }
 
@@ -331,7 +333,6 @@ function drawHeart(x, y, size = 12) {
 function drawCross(x, y, size = 8) {
   ctx.strokeStyle = "white";
   ctx.lineWidth = 2;
-
   ctx.beginPath();
   ctx.arc(x, y, size, 0, Math.PI * 2);
   ctx.moveTo(x - size - 5, y);
@@ -356,24 +357,6 @@ function drawHUD() {
 
   drawCross(x, y + 70, 10);
   ctx.fillText(score, x, y + 95);
-}
-
-function drawTimer() {
-  const totalSeconds = Math.floor(elapsedTime / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  const formatted =
-    String(minutes).padStart(2, "0") +
-    ":" +
-    String(seconds).padStart(2, "0");
-
-  ctx.fillStyle = "white";
-  ctx.font = "28px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "top";
-
-  ctx.fillText(formatted, canvas.width / 2, 20);
 }
 
 // 🔁 LOOP
