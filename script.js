@@ -268,7 +268,7 @@ function draw() {
   ctx.font = "20px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(isPaused ? "PLAY ▶" : "PAUSE ||", pauseBtn.x, pauseBtn.y);
+  ctx.fillText(isPaused ? "▶️ PLAY" : "⏸️ PAUSE", pauseBtn.x, pauseBtn.y);
 
   // pause overlay
   if (isPaused) {
