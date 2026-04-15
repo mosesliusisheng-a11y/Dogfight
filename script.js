@@ -6,6 +6,9 @@ let maxScore = 200;
 let gameState = "playing"; // "playing" | "won" | "lost"
 let hasStarted = false;
 
+let startTime = 0;
+let elapsedTime = 0;
+
 // ❤️ HEALTH SYSTEM
 let playerHealth = 10;
 const maxHealth = 10;
@@ -42,6 +45,11 @@ const pauseBtn = {
 // ⏸️ KEYBOARD PAUSE
 document.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === "p") {
+    if (!isPaused) {
+      elapsedTime = Date.now() - startTime;
+    } else {
+      startTime = Date.now() - elapsedTime;
+    }
     isPaused = !isPaused;
   }
 });
@@ -61,6 +69,8 @@ function startGame() {
   if (hasStarted) return;
   hasStarted = true;
 
+  startTime = Date.now();
+  
   shootInterval = setInterval(() => {
     if (isPaused || gameState !== "playing") return;
 
@@ -125,6 +135,11 @@ function handleInput(x, y) {
     y >= pauseBtn.y &&
     y <= pauseBtn.y + pauseBtn.h
   ) {
+    if (!isPaused) {
+      elapsedTime = Date.now() - startTime;
+    } else {
+      startTime = Date.now() - elapsedTime;
+    }
     isPaused = !isPaused;
     return;
   }
@@ -144,6 +159,12 @@ function handleInput(x, y) {
 
 // 🔁 UPDATE GAME
 function update() {
+
+  // ⏱️ TIMER UPDATE (ADD THIS BLOCK)
+  if (gameState === "playing" && !isPaused) {
+    elapsedTime = Date.now() - startTime;
+  }
+
   if (!hasStarted || gameState !== "playing" || isPaused) return;
 
   // bullets
@@ -260,6 +281,7 @@ function draw() {
   ctx.fillStyle = "orange";
   enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
 
+  drawTimer();
   drawHUD();
 
   // pause button (FIXED: no emoji rendering)
@@ -334,6 +356,24 @@ function drawHUD() {
 
   drawCross(x, y + 70, 10);
   ctx.fillText(score, x, y + 95);
+}
+
+function drawTimer() {
+  const totalSeconds = Math.floor(elapsedTime / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  const formatted =
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0");
+
+  ctx.fillStyle = "white";
+  ctx.font = "28px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+
+  ctx.fillText(formatted, canvas.width / 2, 20);
 }
 
 // 🔁 LOOP
