@@ -129,10 +129,9 @@ function handleInput(x, y) {
     return;
   }
 
-  // restart if game ended
+  // lock input if game ended
   if (gameState !== "playing") {
-    location.reload();
-    return;
+  return;
   }
 
   if (!hasStarted) {
