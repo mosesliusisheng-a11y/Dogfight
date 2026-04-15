@@ -85,12 +85,39 @@ function startGame() {
   }, 1000);
 }
 
-// 🖱️ CLICK INPUT
+// 🖱️ CLICK INPUT (desktop)
 canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
+  handleInput(x, y);
+});
+
+// 📱 TOUCH INPUT (tablet/mobile)
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+
+  const rect = canvas.getBoundingClientRect();
+  const t = e.touches[0];
+
+  const x = t.clientX - rect.left;
+  const y = t.clientY - rect.top;
+
+  handleInput(x, y);
+}, { passive: false });
+
+canvas.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+
+  const rect = canvas.getBoundingClientRect();
+  const t = e.touches[0];
+
+  movePlayer(t.clientX - rect.left);
+}, { passive: false });
+
+// 🎮 UNIFIED INPUT HANDLER
+function handleInput(x, y) {
   // ⏸ pause button
   if (
     x >= pauseBtn.x &&
@@ -114,36 +141,7 @@ canvas.addEventListener("click", (e) => {
   }
 
   movePlayer(x);
-});
-
-// 📱 TOUCH INPUT
-canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-
-  if (gameState !== "playing") {
-    location.reload();
-    return;
-  }
-
-  if (!hasStarted) {
-    startGame();
-    return;
-  }
-
-  const rect = canvas.getBoundingClientRect();
-  const t = e.touches[0];
-
-  movePlayer(t.clientX - rect.left);
-}, { passive: false });
-
-canvas.addEventListener("touchmove", (e) => {
-  e.preventDefault();
-
-  const rect = canvas.getBoundingClientRect();
-  const t = e.touches[0];
-
-  movePlayer(t.clientX - rect.left);
-}, { passive: false });
+}
 
 // 🔁 UPDATE GAME
 function update() {
@@ -265,12 +263,12 @@ function draw() {
 
   drawHUD();
 
-  // pause button
+  // pause button (FIXED: no emoji rendering)
   ctx.fillStyle = "white";
   ctx.font = "20px Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(isPaused ? "▶ PLAY" : "⏸ PAUSE", pauseBtn.x, pauseBtn.y);
+  ctx.fillText(isPaused ? "PLAY ▶" : "PAUSE ||", pauseBtn.x, pauseBtn.y);
 
   // pause overlay
   if (isPaused) {
@@ -322,7 +320,7 @@ function drawCross(x, y, size = 8) {
   ctx.stroke();
 }
 
-// 🧠 HUD (vertical)
+// 🧠 HUD
 function drawHUD() {
   const x = canvas.width - 80;
   const y = 60;
